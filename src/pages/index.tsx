@@ -18,16 +18,28 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        {user.isSignedIn ? (
-          <SignOutButton>
-            <button className="text-white">Sign out</button>
-          </SignOutButton>
-        ) : (
-          <SignInButton mode="modal">
-            <button className="text-white">Sign in</button>
-          </SignInButton>
-        )}
+        <SignInOutButton isSignedIn={user.isSignedIn} />
       </main>
+    </>
+  );
+};
+
+interface SignInOutButtonProps {
+  isSignedIn: boolean | undefined;
+}
+
+const SignInOutButton = (props: SignInOutButtonProps) => {
+  return (
+    <>
+      {props.isSignedIn ? (
+        <SignOutButton>
+          <button className="text-white">Sign out</button>
+        </SignOutButton>
+      ) : (
+        <SignInButton mode="modal">
+          <button className="text-white">Sign in</button>
+        </SignInButton>
+      )}
     </>
   );
 };
