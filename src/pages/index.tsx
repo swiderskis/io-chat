@@ -2,10 +2,13 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
+import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const [username, setUsername] = useState("");
   const user = useUser();
+
+  const { data, isLoading: usernameLoading } =
+    api.loginRegister.getUsername.useQuery();
 
   return (
     <>
@@ -19,21 +22,11 @@ const Home: NextPage = () => {
           <span className="flex w-full justify-center">
             <SignInOutButton isSignedIn={user.isSignedIn} />
           </span>
-          <div className="flex justify-center">
-            <label>
-              Username:
-              <br />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="text-black"
-              ></input>
-            </label>
-          </div>
-          <div className="flex justify-center">
-            <button>Submit</button>
-          </div>
+          {!data?.username && !usernameLoading ? (
+            <ChooseUsername />
+          ) : (
+            data?.username
+          )}
         </div>
       </main>
     </>
@@ -56,6 +49,31 @@ const SignInOutButton = (props: SignInOutButtonProps) => {
           <button>Sign in</button>
         </SignInButton>
       )}
+    </>
+  );
+};
+
+const ChooseUsername = () => {
+  const [username, setUsername] = useState("");
+  const { mutate } = api.loginRegister.setUsername.useMutation();
+
+  return (
+    <>
+      <div className="flex justify-center">
+        <label>
+          Username:
+          <br />
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="text-black"
+          ></input>
+        </label>
+      </div>
+      <div className="flex justify-center">
+        <button onClick={() => mutate({ username: username })}>Submit</button>
+      </div>
     </>
   );
 };

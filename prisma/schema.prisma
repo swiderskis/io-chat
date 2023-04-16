@@ -3,17 +3,17 @@
 
 // Direct URL used for Supabase + PgBouncer integration
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model User {
+  id           String   @id @db.VarChar(255)
+  username     String   @db.VarChar(255)
+  registeredAt DateTime @default(now())
 }
