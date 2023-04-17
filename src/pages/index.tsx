@@ -1,12 +1,9 @@
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const user = useUser();
-
   const { data, isLoading: usernameLoading } =
     api.loginRegister.getUsername.useQuery();
 
@@ -20,60 +17,13 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen justify-center">
         <div className="h-screen w-full max-w-3xl">
           <span className="flex w-full justify-center">
-            <SignInOutButton isSignedIn={user.isSignedIn} />
+            <SignOutButton>
+              <button>Sign out</button>
+            </SignOutButton>
           </span>
-          {!data?.username && !usernameLoading ? (
-            <ChooseUsername />
-          ) : (
-            data?.username
-          )}
+          {!data?.username && !usernameLoading ? null : data?.username}
         </div>
       </main>
-    </>
-  );
-};
-
-interface SignInOutButtonProps {
-  isSignedIn: boolean | undefined;
-}
-
-const SignInOutButton = (props: SignInOutButtonProps) => {
-  return (
-    <>
-      {props.isSignedIn ? (
-        <SignOutButton>
-          <button>Sign out</button>
-        </SignOutButton>
-      ) : (
-        <SignInButton mode="modal">
-          <button>Sign in</button>
-        </SignInButton>
-      )}
-    </>
-  );
-};
-
-const ChooseUsername = () => {
-  const [username, setUsername] = useState("");
-  const { mutate } = api.loginRegister.setUsername.useMutation();
-
-  return (
-    <>
-      <div className="flex justify-center">
-        <label>
-          Username:
-          <br />
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="text-black"
-          ></input>
-        </label>
-      </div>
-      <div className="flex justify-center">
-        <button onClick={() => mutate({ username: username })}>Submit</button>
-      </div>
     </>
   );
 };
