@@ -3,6 +3,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
+import Button from "~/components/Button";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
@@ -94,12 +95,7 @@ const ChooseUsername = () => {
           </div>
           <div className="h-8"></div>
           <div className="flex justify-center">
-            <button
-              className="rounded-md bg-lime-900 px-8 py-4 font-semibold"
-              onClick={submitUsername}
-            >
-              Register
-            </button>
+            <Button text="Register" onClick={submitUsername} />
           </div>
         </div>
       </main>

@@ -1,6 +1,7 @@
 import { SignInButton } from "@clerk/nextjs";
 import { NextPage } from "next";
 import Head from "next/head";
+import Button from "~/components/Button";
 
 const SignIn: NextPage = () => {
   return (
@@ -20,9 +21,7 @@ const SignIn: NextPage = () => {
           <div className="flex w-full grow items-end justify-center py-4">
             <div>
               <SignInButton mode="modal">
-                <button className="rounded-md bg-lime-900 px-8 py-4 font-semibold">
-                  Sign in
-                </button>
+                <Button text="Sign in" />
               </SignInButton>
             </div>
           </div>
