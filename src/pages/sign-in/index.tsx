@@ -10,10 +10,10 @@ const SignIn: NextPage = () => {
         <meta name="description" content="Sign in to io.chat"></meta>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen items-start justify-center">
-        <div className="flex h-full w-full max-w-3xl flex-col bg-zinc-800 md:mt-32 md:h-fit md:rounded-md md:p-16">
+      <main className="flex min-h-screen items-center justify-center bg-zinc-800 md:items-start md:bg-zinc-700">
+        <div className="flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-32 md:h-fit md:rounded-md md:p-16">
           <div className="h-8 md:hidden"></div>
-          <div className="w-full py-4 text-center font-mono text-7xl font-semibold">
+          <div className="w-full py-4 text-center font-mono text-7xl font-thin">
             <h1>io.chat</h1>
           </div>
           <div className="h-8"></div>
