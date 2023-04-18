@@ -60,22 +60,20 @@ const ChooseUsername = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen items-center justify-center bg-zinc-800 md:items-start md:bg-zinc-700">
-        <div className="flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-32 md:h-fit md:rounded-md md:p-16">
+        <div className="flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-16 md:h-fit md:rounded-md md:p-16">
           <div className="w-full py-4 text-center font-mono text-7xl font-thin">
             <h1>io.chat</h1>
           </div>
           {/* TO REMOVE */}
-          <div className="h-8"></div>
-          <span className="flex justify-center">
+          <span className="flex justify-center py-4">
             <SignOutButton>
               <button>Sign out</button>
             </SignOutButton>
           </span>
           {/* TO REMOVE */}
-          <div className="h-8"></div>
           {user.user?.profileImageUrl ? (
             <>
-              <div className="flex justify-center">
+              <div className="flex justify-center py-4">
                 <Image
                   src={user.user?.profileImageUrl}
                   alt="Profile picture"
@@ -84,10 +82,9 @@ const ChooseUsername = () => {
                   height={256}
                 />
               </div>
-              <div className="h-8"></div>
             </>
           ) : null}
-          <div className="flex justify-center">
+          <div className="flex justify-center py-4">
             <label className="flex flex-col justify-center">
               <span className="flex justify-center pb-2">Choose username:</span>
               <input
@@ -99,8 +96,7 @@ const ChooseUsername = () => {
               ></input>
             </label>
           </div>
-          <div className="h-8"></div>
-          <div className="flex justify-center">
+          <div className="flex justify-center py-4">
             <Button text="Register" onClick={submitUsername} />
           </div>
         </div>
