@@ -88,7 +88,7 @@ const ChooseUsername = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="p-4 text-black"
+                className="rounded-md bg-zinc-500 p-4"
                 disabled={isSubmittingUsername}
               ></input>
             </label>
