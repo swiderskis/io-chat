@@ -47,7 +47,7 @@ export const loginRegisterRouter = createTRPCRouter({
           err instanceof Prisma.PrismaClientKnownRequestError &&
           err.code === "P2002"
         )
-          throw new TRPCError({ code: "CONFLICT" });
+          throw new TRPCError({ code: "UNPROCESSABLE_CONTENT" });
 
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }

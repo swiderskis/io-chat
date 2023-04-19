@@ -58,9 +58,9 @@ const ChooseUsername = () => {
           return;
         }
 
-        if (e.data?.httpStatus === 409) {
+        if (e.data?.httpStatus === 422) {
           toast.error("This username is already in use");
-          
+
           return;
         }
 
