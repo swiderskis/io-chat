@@ -42,7 +42,7 @@ export const loginRegisterRouter = createTRPCRouter({
           data: { id: userId, username: input.username },
         });
       } catch (err) {
-        // Throws error if username exists (P2002 code = unique constaint violated)
+        // Throws error if username exists (P2002 code = unique constraint violated)
         if (
           err instanceof Prisma.PrismaClientKnownRequestError &&
           err.code === "P2002"
