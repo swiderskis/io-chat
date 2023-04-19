@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Button from "~/components/Button";
-import useGenericToastError from "~/hooks/useGenericToastError";
+import genericToastError from "~/utils/genericToastError";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
@@ -52,7 +52,7 @@ const ChooseUsername = () => {
         if (e.data?.zodError) {
           const err = e.data.zodError.fieldErrors.username;
 
-          err && err[0] ? toast.error(err[0]) : useGenericToastError();
+          err && err[0] ? toast.error(err[0]) : genericToastError();
 
           return;
         }
@@ -63,7 +63,7 @@ const ChooseUsername = () => {
           return;
         }
 
-        useGenericToastError();
+        genericToastError();
       },
     });
 

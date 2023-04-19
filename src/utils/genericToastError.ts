@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 
-const useGenericToastError = () => {
+const genericToastError = () => {
   toast.error("An error has occurred, please try again later");
 };
 
-export default useGenericToastError;
+export default genericToastError;
