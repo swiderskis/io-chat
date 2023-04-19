@@ -3,6 +3,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import Button from "~/components/Button";
 import { api } from "~/utils/api";
 
@@ -45,6 +46,13 @@ const ChooseUsername = () => {
     api.loginRegister.setUsername.useMutation({
       onSuccess: () => {
         void ctx.loginRegister.getUsername.invalidate();
+      },
+      onError: (e) => {
+        const err = e.data?.zodError?.fieldErrors.username;
+
+        err && err[0]
+          ? toast.error(err[0])
+          : toast.error("An error has occurred, please try again later");
       },
     });
 

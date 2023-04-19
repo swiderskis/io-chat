@@ -20,9 +20,13 @@ export const loginRegisterRouter = createTRPCRouter({
         username: z
           .string()
           .trim()
-          .min(3)
-          .max(20)
           .toLowerCase()
+          .min(3, {
+            message: "Username must be at least 3 characters in length",
+          })
+          .max(20, {
+            message: "Username may only be up to 20 characters in length",
+          })
           .refine((val) => isAlphanumeric(val), {
             message: "Username may only contain alphanumeric characters",
           }),
