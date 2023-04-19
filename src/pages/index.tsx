@@ -48,11 +48,23 @@ const ChooseUsername = () => {
         void ctx.loginRegister.getUsername.invalidate();
       },
       onError: (e) => {
-        const err = e.data?.zodError?.fieldErrors.username;
+        if (e.data?.zodError) {
+          const err = e.data.zodError.fieldErrors.username;
 
-        err && err[0]
-          ? toast.error(err[0])
-          : toast.error("An error has occurred, please try again later");
+          err && err[0]
+            ? toast.error(err[0])
+            : toast.error("An error has occurred, please try again later");
+
+          return;
+        }
+
+        if (e.data?.httpStatus === 409) {
+          toast.error("This username is already in use");
+          
+          return;
+        }
+
+        toast.error("An error has occurred, please try again later");
       },
     });
 
