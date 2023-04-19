@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import isAlphanumeric from "validator/lib/isAlphanumeric";
 import { TRPCError } from "@trpc/server";
+import { Prisma } from "@prisma/client";
 
 export const loginRegisterRouter = createTRPCRouter({
   getUsername: privateProcedure.query(async ({ ctx }) => {
@@ -36,17 +37,19 @@ export const loginRegisterRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.userId;
 
-      const existingUsername = await ctx.prisma.user.findUnique({
-        where: { username: input.username },
-        select: { username: true },
-      });
+      try {
+        await ctx.prisma.user.create({
+          data: { id: userId, username: input.username },
+        });
+      } catch (err) {
+        // Throws error if username exists (P2002 code = unique constaint violated)
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        )
+          throw new TRPCError({ code: "CONFLICT" });
 
-      if (existingUsername) throw new TRPCError({ code: "CONFLICT" });
-
-      const user = await ctx.prisma.user.create({
-        data: { id: userId, username: input.username },
-      });
-
-      return user;
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
     }),
 });
