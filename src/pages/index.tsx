@@ -116,7 +116,11 @@ const ChooseUsername = () => {
             </label>
           </div>
           <div className="flex justify-center py-4">
-            <Button text="Register" onClick={submitUsername} />
+            <Button
+              text="Register"
+              onClick={submitUsername}
+              disabled={isSubmittingUsername}
+            />
           </div>
         </div>
       </main>
