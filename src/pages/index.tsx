@@ -2,7 +2,7 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { toast } from "react-hot-toast";
 import Button from "~/components/Button";
 import genericToastError from "~/utils/genericToastError";
@@ -67,7 +67,9 @@ const ChooseUsername = () => {
       },
     });
 
-  const submitUsername = () => {
+  const submitUsername = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     postUsername({ username: username });
   };
 
@@ -103,25 +105,25 @@ const ChooseUsername = () => {
               </div>
             </>
           ) : null}
-          <div className="flex justify-center py-4">
-            <label className="flex flex-col justify-center">
-              <span className="flex justify-center pb-2">Choose username:</span>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="rounded-md bg-zinc-500 p-4"
-                disabled={isSubmittingUsername}
-              ></input>
-            </label>
-          </div>
-          <div className="flex justify-center py-4">
-            <Button
-              text="Register"
-              onClick={submitUsername}
-              disabled={isSubmittingUsername}
-            />
-          </div>
+          <form onSubmit={(e) => submitUsername(e)}>
+            <div className="flex justify-center py-4">
+              <label className="flex flex-col justify-center">
+                <span className="flex justify-center pb-2">
+                  Choose username:
+                </span>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="rounded-md bg-zinc-500 p-4"
+                  disabled={isSubmittingUsername}
+                ></input>
+              </label>
+            </div>
+            <div className="flex justify-center py-4">
+              <Button text="Register" disabled={isSubmittingUsername} />
+            </div>
+          </form>
         </div>
       </main>
     </>
