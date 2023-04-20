@@ -7,12 +7,13 @@ import { toast } from "react-hot-toast";
 import Button from "~/components/Button";
 import genericToastError from "~/utils/genericToastError";
 import { api } from "~/utils/api";
+import Loading from "~/components/Loading";
 
 const Home: NextPage = () => {
   const { data, isLoading: usernameLoading } =
     api.loginRegister.getUsername.useQuery();
 
-  if (usernameLoading) return <div>Loading</div>;
+  if (usernameLoading) return <Loading />;
 
   if (!data?.username) return <ChooseUsername />;
 
