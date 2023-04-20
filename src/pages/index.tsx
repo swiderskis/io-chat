@@ -40,7 +40,7 @@ const Home: NextPage = () => {
           <div className="flex grow flex-col">
             <div className="h-16 w-full bg-zinc-900">Name</div>
             <div className="w-full grow">Messages</div>
-            <div className="flex h-20 w-full flex-row items-center bg-zinc-900 px-2">
+            <div className="flex h-fit w-full flex-row items-center bg-zinc-900 p-2">
               <input
                 className="h-[60px] grow rounded-md bg-zinc-500 p-2 focus:border-2 focus:border-lime-950 focus:outline-none focus:ring-1 focus:ring-zinc-300"
                 value={message}
