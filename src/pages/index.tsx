@@ -10,6 +10,8 @@ import { api } from "~/utils/api";
 import Loading from "~/components/Loading";
 
 const Home: NextPage = () => {
+  const [message, setMessage] = useState("");
+
   const { data, isLoading: usernameLoading } =
     api.loginRegister.getUsername.useQuery();
 
@@ -25,7 +27,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex h-screen w-screen flex-col">
-        <header className="flex w-full bg-zinc-900 px-4 py-2 text-xl">
+        <header className="flex w-full bg-zinc-950 px-2 py-1">
           <span className="font-thin">io.chat</span>
           <div className="flex grow justify-end">
             <SignOutButton>
@@ -35,7 +37,22 @@ const Home: NextPage = () => {
         </header>
         <main className="flex h-full w-full flex-row">
           <nav className="h-full w-72 bg-zinc-800">Navbar</nav>
-          <div className="grow">Messages</div>
+          <div className="flex grow flex-col">
+            <div className="h-16 w-full bg-zinc-900">Name</div>
+            <div className="w-full grow">Messages</div>
+            <div className="flex h-20 w-full flex-row items-center bg-zinc-900 px-2">
+              <input
+                className="h-[60px] grow rounded-md bg-zinc-500 p-2 focus:border-2 focus:border-lime-950 focus:outline-none focus:ring-1 focus:ring-zinc-300"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              ></input>
+              <div
+                className={`ml-2 ${message.length === 0 ? "hidden" : "block"}`}
+              >
+                <Button text="Send" />
+              </div>
+            </div>
+          </div>
           <div className="h-full w-72 bg-zinc-800">Contact info</div>
         </main>
       </div>
