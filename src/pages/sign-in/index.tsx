@@ -13,7 +13,7 @@ const SignIn: NextPage = () => {
       </Head>
       <main className="flex min-h-screen items-center justify-center bg-zinc-800 md:items-start md:bg-zinc-700">
         <div className="mt-0 flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-16 md:h-fit md:rounded-md md:p-16">
-          <div className="w-full py-4 text-center font-mono text-7xl font-thin">
+          <div className="w-full py-4 text-center font-mono text-7xl">
             <h1>io.chat</h1>
           </div>
           <div className="flex w-full items-end justify-center py-4">

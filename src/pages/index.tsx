@@ -28,7 +28,7 @@ const Home: NextPage = () => {
       </Head>
       <div className="flex h-screen w-screen flex-col">
         <header className="flex w-full bg-zinc-950 px-2 py-1">
-          <span className="font-thin">io.chat</span>
+          <span>io.chat</span>
           <div className="flex grow justify-end">
             <SignOutButton>
               <button>Sign out</button>
@@ -105,7 +105,7 @@ const ChooseUsername = () => {
       </Head>
       <main className="flex min-h-screen items-center justify-center bg-zinc-800 md:items-start md:bg-zinc-700">
         <div className="flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-16 md:h-fit md:rounded-md md:p-16">
-          <div className="w-full py-4 text-center font-mono text-7xl font-thin">
+          <div className="w-full py-4 text-center font-mono text-7xl">
             <h1>io.chat</h1>
           </div>
           {/* TO REMOVE */}
