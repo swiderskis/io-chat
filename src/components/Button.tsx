@@ -7,7 +7,7 @@ interface ButtonProps {
 const Button = (props: ButtonProps) => {
   return (
     <button
-      className="rounded-md bg-lime-900 px-8 py-4 font-semibold"
+      className="rounded-md bg-lime-900 px-8 py-4 font-semibold active:bg-lime-950"
       onClick={props.onClick}
       disabled={props.disabled}
     >

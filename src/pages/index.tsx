@@ -49,7 +49,7 @@ const Home: NextPage = () => {
               <div
                 className={`ml-2 ${message.length === 0 ? "hidden" : "block"}`}
               >
-                <button className="rounded-full bg-lime-950 p-2">
+                <button className="rounded-full bg-lime-950 p-2 hover:rounded-xl active:bg-lime-900">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
