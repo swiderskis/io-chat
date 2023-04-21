@@ -40,16 +40,25 @@ const Home: NextPage = () => {
           <div className="flex grow flex-col">
             <div className="h-16 w-full bg-zinc-900">Name</div>
             <div className="w-full grow">Messages</div>
-            <div className="flex h-fit w-full flex-row items-center bg-zinc-900 p-2">
+            <div className="flex h-fit w-full flex-row items-center p-2">
               <input
-                className="h-[60px] grow rounded-md bg-zinc-500 p-2 focus:border-2 focus:border-lime-950 focus:outline-none focus:ring-1 focus:ring-zinc-300"
+                className="h-10 grow rounded-full bg-zinc-500 px-4 py-2 focus:outline-none"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               ></input>
               <div
                 className={`ml-2 ${message.length === 0 ? "hidden" : "block"}`}
               >
-                <Button text="Send" />
+                <button className="rounded-full bg-lime-950 p-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
