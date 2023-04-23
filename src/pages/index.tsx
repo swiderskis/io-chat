@@ -98,14 +98,14 @@ interface ChatMessageProps {
   message: string;
   senderId: string;
   userId: string;
-  profileImageDetails?: { id: string; profileImageUrl: string } | undefined;
+  profileImageDetails: { id: string; profileImageUrl: string } | undefined;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
       className={`flex px-2 py-1 ${
-        props.senderId === props.userId ? "justify-end" : null
+        props.senderId === props.userId ? "justify-end" : ""
       }`}
     >
       {props.senderId === props.userId ? null : (
