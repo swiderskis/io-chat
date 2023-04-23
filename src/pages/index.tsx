@@ -2,7 +2,7 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { FormEvent, Fragment, useState } from "react";
 import { toast } from "react-hot-toast";
 import Button from "~/components/Button";
 import genericToastError from "~/utils/genericToastError";
@@ -45,11 +45,32 @@ const Home: NextPage = () => {
 
 const ChatWindow = () => {
   const [message, setMessage] = useState("");
+  const [chatId, setChatId] = useState(1);
+  const user = useUser();
+
+  const { data, isLoading: messagesLoading } = api.chat.getMessages.useQuery({
+    chatId,
+  });
+
+  if (messagesLoading) return <Loading />;
+
+  if (!user.user || !data) return <div>Error</div>;
 
   return (
     <div className="flex grow flex-col">
       <div className="h-16 w-full bg-zinc-900">Name</div>
-      <div className="w-full grow">Messages</div>
+      <div className="flex w-full grow flex-col py-1">
+        {data.map((messageDetails) => (
+          <Fragment key={messageDetails.message.id}>
+            <ChatMessage
+              message={messageDetails.message.message}
+              senderId={messageDetails.message.userId}
+              userId={user.user.id}
+              profileImageDetails={messageDetails.profileImageUrl}
+            />
+          </Fragment>
+        ))}
+      </div>
       <div className="flex h-fit w-full flex-row items-center p-2">
         <input
           className="h-10 grow rounded-full bg-zinc-500 px-4 py-2 focus:outline-none"
@@ -68,6 +89,46 @@ const ChatWindow = () => {
             </svg>
           </button>
         </div>
+      </div>
+    </div>
+  );
+};
+
+interface ChatMessageProps {
+  message: string;
+  senderId: string;
+  userId: string;
+  profileImageDetails?: { id: string; profileImageUrl: string } | undefined;
+}
+
+const ChatMessage = (props: ChatMessageProps) => {
+  return (
+    <div
+      className={`flex px-2 py-1 ${
+        props.senderId === props.userId ? "justify-end" : null
+      }`}
+    >
+      {props.senderId === props.userId ? null : (
+        <div className="pr-2">
+          {props.profileImageDetails ? (
+            <Image
+              src={props.profileImageDetails.profileImageUrl}
+              alt="Profile picture"
+              width={44}
+              height={44}
+              className="rounded-full"
+            ></Image>
+          ) : (
+            <div className="h-11 w-11 rounded-full bg-zinc-800"></div>
+          )}
+        </div>
+      )}
+      <div
+        className={`w-2/3 rounded-lg px-3 py-2 ${
+          props.senderId === props.userId ? "bg-lime-800" : "bg-zinc-500"
+        }`}
+      >
+        <span>{props.message}</span>
       </div>
     </div>
   );
