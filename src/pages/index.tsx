@@ -2,10 +2,12 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { FormEvent, Fragment, useState } from "react";
 import { api } from "~/utils/api";
 import Loading from "~/components/Loading";
 import defaultProfilePicture from "~/assets/default-profile-picture.png";
+import toast from "react-hot-toast";
+import genericToastError from "~/utils/genericToastError";
 
 const Home: NextPage = () => {
   return (
@@ -63,25 +65,7 @@ const ChatWindow = () => {
           </Fragment>
         ))}
       </div>
-      <div className="flex h-fit w-full flex-row items-center p-2">
-        <input
-          className="h-10 grow rounded-full bg-zinc-500 px-4 py-2 focus:outline-none"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        ></input>
-        <div className={`ml-2 ${message.length === 0 ? "hidden" : "block"}`}>
-          <button className="rounded-full bg-lime-950 p-2 hover:rounded-xl active:bg-lime-900">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="h-6 w-6"
-            >
-              <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <NewMessageBar chatId={chatId} />
     </div>
   );
 };
@@ -152,6 +136,75 @@ const ChatMessage = (props: ChatMessageProps) => {
         <span>{props.message}</span>
       </div>
     </div>
+  );
+};
+
+interface NewMessageBarProps {
+  chatId: number;
+}
+
+const NewMessageBar = (props: NewMessageBarProps) => {
+  const [message, setMessage] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate: postMessage } = api.chat.sendMessage.useMutation({
+    onSuccess: () => {
+      setMessage("");
+      void ctx.chat.getMessages.invalidate();
+    },
+    onError: (e) => {
+      if (e.data?.zodError) {
+        const err = e.data.zodError.fieldErrors.message;
+
+        console.log(err);
+
+        err && err[0] ? toast.error(err[0]) : genericToastError();
+
+        return;
+      }
+
+      if (e.data?.httpStatus === 429) {
+        toast.error(
+          "Slow down! You are trying to send too many messages at once"
+        );
+
+        return;
+      }
+
+      genericToastError();
+    },
+  });
+
+  const sendMessage = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    postMessage({ message: message, chatId: props.chatId });
+  };
+
+  return (
+    <form
+      className="flex h-fit w-full flex-row items-center p-2"
+      onSubmit={sendMessage}
+    >
+      <input
+        className="h-10 grow rounded-full bg-zinc-500 px-4 py-2 focus:outline-none"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      ></input>
+      <div className={`ml-2 ${message.length === 0 ? "hidden" : "block"}`}>
+        <button className="rounded-full bg-lime-950 p-2 hover:rounded-xl active:bg-lime-900">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="h-6 w-6"
+          >
+            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+          </svg>
+        </button>
+      </div>
+    </form>
   );
 };
 
