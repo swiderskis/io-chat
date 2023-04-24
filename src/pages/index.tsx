@@ -25,7 +25,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex h-screen w-screen flex-col">
-        <header className="flex w-full bg-zinc-950 px-2 py-1">
+        <header className="flex h-fit w-full bg-zinc-950 px-2 py-1">
           <span>io.chat</span>
           <div className="flex grow justify-end">
             <SignOutButton>
@@ -33,10 +33,10 @@ const Home: NextPage = () => {
             </SignOutButton>
           </div>
         </header>
-        <main className="flex h-full w-full flex-row">
-          <nav className="h-full w-72 bg-zinc-800">Navbar</nav>
+        <main className="flex h-[calc(100%-36px)] w-full flex-row">
+          <nav className="h-full w-1/6 bg-zinc-800">Navbar</nav>
           <ChatWindow />
-          <div className="h-full w-72 bg-zinc-800">Contact info</div>
+          <div className="h-full w-1/6 bg-zinc-800">Contact info</div>
         </main>
       </div>
     </>
@@ -57,9 +57,9 @@ const ChatWindow = () => {
   if (!user.user || !data) return <div>Error</div>;
 
   return (
-    <div className="flex grow flex-col">
+    <div className="flex w-2/3 grow flex-col">
       <div className="h-16 w-full bg-zinc-900">Name</div>
-      <div className="flex w-full grow flex-col py-1">
+      <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
         {data.map((messageDetails) => (
           <Fragment key={messageDetails.message.id}>
             <ChatMessage
