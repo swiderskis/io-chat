@@ -110,17 +110,11 @@ const ChatMessage = (props: ChatMessageProps) => {
     >
       {props.senderId === props.userId ? null : (
         <div className="pr-2">
-          {props.profileImageDetails ? (
-            <Image
-              src={props.profileImageDetails.profileImageUrl}
-              alt="Profile picture"
-              width={44}
-              height={44}
-              className="rounded-full"
-            ></Image>
-          ) : (
-            <div className="h-11 w-11 rounded-full bg-zinc-800"></div>
-          )}
+          <ProfilePictureOrDefault
+            width={44}
+            height={44}
+            profileImageDetails={props.profileImageDetails}
+          />
         </div>
       )}
       <div
@@ -223,6 +217,32 @@ const ChooseUsername = () => {
           </form>
         </div>
       </main>
+    </>
+  );
+};
+
+interface ProfilePictureOrDefaultProps {
+  width: number;
+  height: number;
+  profileImageDetails?: { id: string; profileImageUrl: string } | undefined;
+}
+
+const ProfilePictureOrDefault = (props: ProfilePictureOrDefaultProps) => {
+  return (
+    <>
+      {props.profileImageDetails ? (
+        <Image
+          src={props.profileImageDetails.profileImageUrl}
+          alt="Profile picture"
+          width={props.width}
+          height={props.height}
+          className="rounded-full"
+        ></Image>
+      ) : (
+        <div
+          className={`h-${props.height}px w-${props.width}px rounded-full bg-zinc-800`}
+        ></div>
+      )}
     </>
   );
 };
