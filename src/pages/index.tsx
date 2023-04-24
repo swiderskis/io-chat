@@ -240,7 +240,7 @@ const ProfilePictureOrDefault = (props: ProfilePictureOrDefaultProps) => {
         ></Image>
       ) : (
         <div
-          className={`h-${props.height}px w-${props.width}px rounded-full bg-zinc-800`}
+          className={`h-[${props.height}px] w-[${props.width}px] rounded-full bg-zinc-800`}
         ></div>
       )}
     </>
