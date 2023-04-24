@@ -4,7 +4,11 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { User } from "@clerk/nextjs/dist/api";
 
 const filterUserDetails = (user: User) => {
-  return { id: user.id, profileImageUrl: user.profileImageUrl };
+  return {
+    id: user.id,
+    username: user.username,
+    profileImageUrl: user.profileImageUrl,
+  };
 };
 
 export const chatRouter = createTRPCRouter({

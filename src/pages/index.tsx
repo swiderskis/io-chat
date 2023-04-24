@@ -2,21 +2,11 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { FormEvent, Fragment, useState } from "react";
-import { toast } from "react-hot-toast";
-import Button from "~/components/Button";
-import genericToastError from "~/utils/genericToastError";
+import { Fragment, useState } from "react";
 import { api } from "~/utils/api";
 import Loading from "~/components/Loading";
 
 const Home: NextPage = () => {
-  const { data, isLoading: usernameLoading } =
-    api.loginRegister.getUsername.useQuery();
-
-  if (usernameLoading) return <Loading />;
-
-  if (!data?.username) return <ChooseUsername />;
-
   return (
     <>
       <Head>
@@ -125,99 +115,6 @@ const ChatMessage = (props: ChatMessageProps) => {
         <span>{props.message}</span>
       </div>
     </div>
-  );
-};
-
-const ChooseUsername = () => {
-  const [username, setUsername] = useState("");
-  const user = useUser();
-
-  const ctx = api.useContext();
-
-  const { mutate: postUsername, isLoading: isSubmittingUsername } =
-    api.loginRegister.setUsername.useMutation({
-      onSuccess: () => {
-        void ctx.loginRegister.getUsername.invalidate();
-      },
-      onError: (e) => {
-        if (e.data?.zodError) {
-          const err = e.data.zodError.fieldErrors.username;
-
-          err && err[0] ? toast.error(err[0]) : genericToastError();
-
-          return;
-        }
-
-        if (e.data?.httpStatus === 422) {
-          toast.error("This username is already in use");
-
-          return;
-        }
-
-        genericToastError();
-      },
-    });
-
-  const submitUsername = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    postUsername({ username: username });
-  };
-
-  return (
-    <>
-      <Head>
-        <title>io.chat - Choose username</title>
-        <meta name="description" content="Choose username for io.chat" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="flex min-h-screen items-center justify-center bg-zinc-800 md:items-start md:bg-zinc-700">
-        <div className="flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-16 md:h-fit md:rounded-md md:p-16">
-          <div className="w-full py-4 text-center font-mono text-7xl">
-            <h1>io.chat</h1>
-          </div>
-          {/* TO REMOVE */}
-          <span className="flex justify-center py-4">
-            <SignOutButton>
-              <button>Sign out</button>
-            </SignOutButton>
-          </span>
-          {/* TO REMOVE */}
-          {user.user?.profileImageUrl ? (
-            <>
-              <div className="flex justify-center py-4">
-                <Image
-                  src={user.user?.profileImageUrl}
-                  alt="Profile picture"
-                  className="rounded-full"
-                  width={256}
-                  height={256}
-                />
-              </div>
-            </>
-          ) : null}
-          <form onSubmit={(e) => submitUsername(e)}>
-            <div className="flex justify-center py-4">
-              <label className="flex flex-col justify-center">
-                <span className="flex justify-center pb-2">
-                  Choose username:
-                </span>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="rounded-md bg-zinc-500 p-4"
-                  disabled={isSubmittingUsername}
-                ></input>
-              </label>
-            </div>
-            <div className="flex justify-center py-4">
-              <Button text="Register" disabled={isSubmittingUsername} />
-            </div>
-          </form>
-        </div>
-      </main>
-    </>
   );
 };
 

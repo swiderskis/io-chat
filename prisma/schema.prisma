@@ -12,18 +12,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id           String        @id @db.VarChar(255)
-  username     String        @unique @db.VarChar(255)
-  registeredAt DateTime      @default(now())
-  chats        Chat[]
-  chatMessages ChatMessage[]
-}
-
 model Chat {
   id           Int           @id @default(autoincrement())
   createdAt    DateTime      @default(now())
-  users        User[]
+  chatMembers  ChatMember[]
   chatMessages ChatMessage[]
 }
 
@@ -31,10 +23,20 @@ model ChatMessage {
   id      Int      @id @default(autoincrement())
   message String   @db.VarChar(1000)
   userId  String   @db.VarChar(255)
-  user    User     @relation(fields: [userId], references: [id])
   chatId  Int
   chat    Chat     @relation(fields: [chatId], references: [id])
   sentAt  DateTime @default(now())
 
+  @@index([chatId])
+}
+
+model ChatMember {
+  userId   String   @db.VarChar(255)
+  chatId   Int
+  chat     Chat     @relation(fields: [chatId], references: [id])
+  joinedAt DateTime @default(now())
+
+  @@id([userId, chatId])
+  @@index([userId])
   @@index([chatId])
 }
