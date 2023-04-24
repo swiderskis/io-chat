@@ -104,8 +104,8 @@ interface ChatMessageProps {
 const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
-      className={`flex px-2 py-1 ${
-        props.senderId === props.userId ? "justify-end" : ""
+      className={`flex px-2 py-1${
+        props.senderId === props.userId ? " justify-end" : ""
       }`}
     >
       {props.senderId === props.userId ? null : (
@@ -118,7 +118,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         </div>
       )}
       <div
-        className={`w-2/3 rounded-lg px-3 py-2 ${
+        className={`flex min-w-[44px] max-w-[66.66667%] justify-center rounded-3xl px-4 py-2 ${
           props.senderId === props.userId ? "bg-lime-800" : "bg-zinc-500"
         }`}
       >
