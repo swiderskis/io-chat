@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Fragment, useState } from "react";
 import { api } from "~/utils/api";
 import Loading from "~/components/Loading";
+import defaultProfilePicture from "~/assets/default-profile-picture.png";
 
 const Home: NextPage = () => {
   return (
@@ -38,25 +39,26 @@ const ChatWindow = () => {
   const [chatId, setChatId] = useState(1);
   const user = useUser();
 
-  const { data, isLoading: messagesLoading } = api.chat.getMessages.useQuery({
-    chatId,
-  });
+  const { data: messages, isLoading: messagesLoading } =
+    api.chat.getMessages.useQuery({
+      chatId,
+    });
 
   if (messagesLoading) return <Loading />;
 
-  if (!user.user || !data) return <div>Error</div>;
+  if (!user.user || !messages) return <div>Error</div>;
 
   return (
     <div className="flex w-2/3 grow flex-col">
-      <div className="h-16 w-full bg-zinc-900">Name</div>
+      <ChatHeader chatId={chatId} />
       <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
-        {data.map((messageDetails) => (
+        {messages.map((messageDetails) => (
           <Fragment key={messageDetails.message.id}>
             <ChatMessage
               message={messageDetails.message.message}
               senderId={messageDetails.message.userId}
               userId={user.user.id}
-              profileImageDetails={messageDetails.profileImageUrl}
+              profileImageDetails={messageDetails.userDetails}
             />
           </Fragment>
         ))}
@@ -84,6 +86,41 @@ const ChatWindow = () => {
   );
 };
 
+interface ChatHeaderProps {
+  chatId: number;
+}
+
+const ChatHeader = (props: ChatHeaderProps) => {
+  const { data: chatDetails, isLoading: chatDetailsLoading } =
+    api.chat.getChatDetails.useQuery({ chatId: props.chatId });
+
+  return (
+    <div className="flex h-16 w-full flex-row bg-zinc-900 p-2">
+      {chatDetails ? (
+        <ProfilePictureOrDefault
+          width={44}
+          height={44}
+          profileImageUrl={
+            chatDetailsLoading || !chatDetails || chatDetails.length > 1
+              ? undefined
+              : chatDetails[0]?.userDetails?.profileImageUrl
+          }
+        />
+      ) : (
+        <ProfilePictureOrDefault width={44} height={44} />
+      )}
+      <div className="-mt-[2px] flex flex-col px-3">
+        {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
+          <span>Chat</span>
+        ) : (
+          <span>{chatDetails[0]?.userDetails?.username}</span>
+        )}
+        <span className="text-xs">Last online PLACEHOLDER</span>
+      </div>
+    </div>
+  );
+};
+
 interface ChatMessageProps {
   message: string;
   senderId: string;
@@ -103,7 +140,7 @@ const ChatMessage = (props: ChatMessageProps) => {
           <ProfilePictureOrDefault
             width={44}
             height={44}
-            profileImageDetails={props.profileImageDetails}
+            profileImageUrl={props.profileImageDetails?.profileImageUrl}
           />
         </div>
       )}
@@ -121,24 +158,28 @@ const ChatMessage = (props: ChatMessageProps) => {
 interface ProfilePictureOrDefaultProps {
   width: number;
   height: number;
-  profileImageDetails?: { id: string; profileImageUrl: string } | undefined;
+  profileImageUrl?: string | undefined;
 }
 
 const ProfilePictureOrDefault = (props: ProfilePictureOrDefaultProps) => {
   return (
     <>
-      {props.profileImageDetails ? (
+      {props.profileImageUrl ? (
         <Image
-          src={props.profileImageDetails.profileImageUrl}
+          src={props.profileImageUrl}
           alt="Profile picture"
           width={props.width}
           height={props.height}
           className="rounded-full"
         ></Image>
       ) : (
-        <div
-          className={`h-[${props.height}px] w-[${props.width}px] rounded-full bg-zinc-800`}
-        ></div>
+        <Image
+          src={defaultProfilePicture}
+          alt="Profile picture"
+          width={props.width}
+          height={props.height}
+          className="rounded-full"
+        ></Image>
       )}
     </>
   );

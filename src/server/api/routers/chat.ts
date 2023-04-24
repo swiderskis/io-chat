@@ -29,7 +29,29 @@ export const chatRouter = createTRPCRouter({
 
       return messages.map((message) => ({
         message,
-        profileImageUrl: users.find((user) => user.id === message.userId),
+        userDetails: users.find((user) => user.id === message.userId),
+      }));
+    }),
+
+  getChatDetails: privateProcedure
+    .input(z.object({ chatId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+
+      const members = await ctx.prisma.chatMember.findMany({
+        where: { chatId: input.chatId, NOT: { userId: userId } },
+        select: { userId: true },
+      });
+
+      const users = (
+        await clerkClient.users.getUserList({
+          userId: members.map((member) => member.userId),
+        })
+      ).map(filterUserDetails);
+
+      return members.map((member) => ({
+        member,
+        userDetails: users.find((user) => user.id === member.userId),
       }));
     }),
 });
