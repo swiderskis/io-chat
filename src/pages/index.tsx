@@ -37,7 +37,6 @@ const Home: NextPage = () => {
 };
 
 const ChatWindow = () => {
-  const [message, setMessage] = useState("");
   const [chatId, setChatId] = useState(1);
   const user = useUser();
 
