@@ -10,7 +10,7 @@ const server = z.object({
   DIRECT_URL: z.string().url(),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
   CLERK_SECRET_KEY: z.string(),
-  UPSTASH_REDIS_REST_URL: z.string(),
+  UPSTASH_REDIS_REST_URL: z.string().url(),
   UPSTASH_REDIS_REST_TOKEN: z.string(),
 });
 
@@ -19,7 +19,8 @@ const server = z.object({
  * built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 const client = z.object({
-  // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  NEXT_PUBLIC_SUPABASE_URL: z.string(),
+  NEXT_PUBLIC_SUPABASE_KEY: z.string(),
 });
 
 /**
@@ -37,7 +38,8 @@ const processEnv = {
   CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
   UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
   UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
-  // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_KEY: process.env.NEXT_PUBLIC_SUPABASE_KEY,
 };
 
 // Don't touch the part below

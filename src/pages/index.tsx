@@ -8,6 +8,13 @@ import Loading from "~/components/Loading";
 import defaultProfilePicture from "~/assets/default-profile-picture.png";
 import toast from "react-hot-toast";
 import genericToastError from "~/utils/genericToastError";
+import { createClient } from "@supabase/supabase-js";
+import { env } from "~/env.mjs";
+
+const supabase = createClient(
+  env.NEXT_PUBLIC_SUPABASE_URL,
+  env.NEXT_PUBLIC_SUPABASE_KEY
+);
 
 const Home: NextPage = () => {
   return (
@@ -39,11 +46,26 @@ const Home: NextPage = () => {
 const ChatWindow = () => {
   const [chatId, setChatId] = useState(1);
   const user = useUser();
+  const ctx = api.useContext();
 
   const { data: messages, isLoading: messagesLoading } =
     api.chat.getMessages.useQuery({
       chatId,
     });
+
+  const channel = supabase
+    .channel("changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "ChatMessage",
+        filter: `chatId=eq.${chatId}`,
+      },
+      (_payload) => void ctx.chat.getMessages.invalidate()
+    )
+    .subscribe();
 
   if (messagesLoading) return <Loading />;
 
@@ -150,7 +172,6 @@ const NewMessageBar = (props: NewMessageBarProps) => {
   const { mutate: postMessage } = api.chat.sendMessage.useMutation({
     onSuccess: () => {
       setMessage("");
-      void ctx.chat.getMessages.invalidate();
     },
     onError: (e) => {
       if (e.data?.zodError) {
