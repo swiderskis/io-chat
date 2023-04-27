@@ -246,7 +246,12 @@ const ChatList = (props: ChatListProps) => {
   const { data: chatIds, isLoading: chatIdsLoading } =
     api.chat.getChatList.useQuery();
 
-  if (chatIdsLoading) return <Loading />;
+  if (chatIdsLoading)
+    return (
+      <div className="w-1/6">
+        <Loading />
+      </div>
+    );
 
   if (!chatIds) return <div>Error</div>;
 
