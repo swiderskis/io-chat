@@ -17,6 +17,8 @@ const supabase = createClient(
 );
 
 const Home: NextPage = () => {
+  const [selectedChatId, setSelectedChatId] = useState<number>();
+
   return (
     <>
       <Head>
@@ -34,8 +36,12 @@ const Home: NextPage = () => {
           </div>
         </header>
         <main className="flex h-[calc(100%-36px)] w-full flex-row">
-          <nav className="h-full w-1/6 bg-zinc-800">Navbar</nav>
-          <ChatWindow />
+          <ChatList setSelectedChatId={setSelectedChatId} />
+          {selectedChatId ? (
+            <ChatWindow chatId={selectedChatId} />
+          ) : (
+            <div className="flex w-2/3 grow flex-col"></div>
+          )}
           <div className="h-full w-1/6 bg-zinc-800">Contact info</div>
         </main>
       </div>
@@ -43,37 +49,45 @@ const Home: NextPage = () => {
   );
 };
 
-const ChatWindow = () => {
-  const [chatId, setChatId] = useState(1);
+interface ChatWindowProps {
+  chatId: number;
+}
+
+const ChatWindow = (props: ChatWindowProps) => {
   const user = useUser();
   const ctx = api.useContext();
 
   const { data: messages, isLoading: messagesLoading } =
     api.chat.getMessages.useQuery({
-      chatId,
+      chatId: props.chatId,
     });
 
   const channel = supabase
-    .channel("changes")
+    .channel(`${props.chatId}`)
     .on(
       "postgres_changes",
       {
         event: "*",
         schema: "public",
         table: "ChatMessage",
-        filter: `chatId=eq.${chatId}`,
+        filter: `chatId=eq.${props.chatId}`,
       },
       (_payload) => void ctx.chat.getMessages.invalidate()
     )
     .subscribe();
 
-  if (messagesLoading) return <Loading />;
+  if (messagesLoading)
+    return (
+      <div className="w-2/3">
+        <Loading />
+      </div>
+    );
 
   if (!user.user || !messages) return <div>Error</div>;
 
   return (
     <div className="flex w-2/3 grow flex-col">
-      <ChatHeader chatId={chatId} />
+      <ChatHeader chatId={props.chatId} />
       <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
         {messages.map((messageDetails) => (
           <Fragment key={messageDetails.message.id}>
@@ -86,7 +100,7 @@ const ChatWindow = () => {
           </Fragment>
         ))}
       </div>
-      <NewMessageBar chatId={chatId} />
+      <NewMessageBar chatId={props.chatId} />
     </div>
   );
 };
@@ -116,7 +130,7 @@ const ChatHeader = (props: ChatHeaderProps) => {
       )}
       <div className="-mt-[2px] flex flex-col px-3">
         {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
-          <span>Chat</span>
+          <span>Group chat</span>
         ) : (
           <span>{chatDetails[0]?.userDetails?.username}</span>
         )}
@@ -167,8 +181,6 @@ interface NewMessageBarProps {
 const NewMessageBar = (props: NewMessageBarProps) => {
   const [message, setMessage] = useState("");
 
-  const ctx = api.useContext();
-
   const { mutate: postMessage } = api.chat.sendMessage.useMutation({
     onSuccess: () => {
       setMessage("");
@@ -176,8 +188,6 @@ const NewMessageBar = (props: NewMessageBarProps) => {
     onError: (e) => {
       if (e.data?.zodError) {
         const err = e.data.zodError.fieldErrors.message;
-
-        console.log(err);
 
         err && err[0] ? toast.error(err[0]) : genericToastError();
 
@@ -225,6 +235,73 @@ const NewMessageBar = (props: NewMessageBarProps) => {
         </button>
       </div>
     </form>
+  );
+};
+
+interface ChatListProps {
+  setSelectedChatId: (chatId: number) => void;
+}
+
+const ChatList = (props: ChatListProps) => {
+  const { data: chatIds, isLoading: chatIdsLoading } =
+    api.chat.getChatList.useQuery();
+
+  if (chatIdsLoading) return <Loading />;
+
+  if (!chatIds) return <div>Error</div>;
+
+  return (
+    <nav className="flex h-full w-1/6 flex-col bg-zinc-800 py-1">
+      {chatIds.map((chatId) => (
+        <ChatListItem
+          chatId={chatId}
+          setSelectedChatId={props.setSelectedChatId}
+        />
+      ))}
+    </nav>
+  );
+};
+
+interface ChatListItemProps {
+  chatId: number;
+  setSelectedChatId: (chatId: number) => void;
+}
+
+const ChatListItem = (props: ChatListItemProps) => {
+  const { data: chatDetails, isLoading: chatDetailsLoading } =
+    api.chat.getChatDetails.useQuery({ chatId: props.chatId });
+
+  return (
+    <div className="py-1 pl-2 pr-3">
+      <button
+        className="flex w-full rounded-md bg-zinc-600 bg-opacity-60 p-2 text-left hover:bg-opacity-80"
+        onClick={() => {
+          props.setSelectedChatId(props.chatId);
+        }}
+      >
+        {chatDetails ? (
+          <ProfilePictureOrDefault
+            width={44}
+            height={44}
+            profileImageUrl={
+              chatDetailsLoading || !chatDetails || chatDetails.length > 1
+                ? undefined
+                : chatDetails[0]?.userDetails?.profileImageUrl
+            }
+          />
+        ) : (
+          <ProfilePictureOrDefault width={44} height={44} />
+        )}
+        <div className="-mt-[2px] flex flex-col px-3">
+          {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
+            <span>Group chat</span>
+          ) : (
+            <span>{chatDetails[0]?.userDetails?.username}</span>
+          )}
+          <span className="text-xs">Message PLACEHOLDER</span>
+        </div>
+      </button>
+    </div>
   );
 };
 

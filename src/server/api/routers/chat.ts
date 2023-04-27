@@ -96,4 +96,17 @@ export const chatRouter = createTRPCRouter({
         data: { message: input.message, chatId: input.chatId, userId: userId },
       });
     }),
+
+  getChatList: privateProcedure.query(async ({ ctx }) => {
+    const userId = ctx.userId;
+
+    const chatList = await ctx.prisma.chatMember.findMany({
+      where: { userId: userId },
+      select: { chatId: true },
+    });
+
+    const chatListIds = chatList.map((id) => id.chatId);
+
+    return chatListIds;
+  }),
 });
