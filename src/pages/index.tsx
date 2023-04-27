@@ -253,10 +253,12 @@ const ChatList = (props: ChatListProps) => {
   return (
     <nav className="no-scrollbar flex h-full w-1/6 flex-col overflow-y-auto bg-zinc-800 py-1">
       {chatIds.map((chatId) => (
-        <ChatListItem
-          chatId={chatId}
-          setSelectedChatId={props.setSelectedChatId}
-        />
+        <Fragment key={chatId}>
+          <ChatListItem
+            chatId={chatId}
+            setSelectedChatId={props.setSelectedChatId}
+          />
+        </Fragment>
       ))}
     </nav>
   );
