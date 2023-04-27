@@ -100,7 +100,7 @@ const ChatWindow = (props: ChatWindowProps) => {
           </Fragment>
         ))}
       </div>
-      <NewMessageBar chatId={props.chatId} />
+      <MessageBar chatId={props.chatId} />
     </div>
   );
 };
@@ -174,11 +174,11 @@ const ChatMessage = (props: ChatMessageProps) => {
   );
 };
 
-interface NewMessageBarProps {
+interface MessageBarProps {
   chatId: number;
 }
 
-const NewMessageBar = (props: NewMessageBarProps) => {
+const MessageBar = (props: MessageBarProps) => {
   const [message, setMessage] = useState("");
 
   const { mutate: postMessage } = api.chat.sendMessage.useMutation({
