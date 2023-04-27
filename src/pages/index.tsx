@@ -251,7 +251,7 @@ const ChatList = (props: ChatListProps) => {
   if (!chatIds) return <div>Error</div>;
 
   return (
-    <nav className="flex h-full w-1/6 flex-col bg-zinc-800 py-1">
+    <nav className="no-scrollbar flex h-full w-1/6 flex-col overflow-y-auto bg-zinc-800 py-1">
       {chatIds.map((chatId) => (
         <ChatListItem
           chatId={chatId}
@@ -272,7 +272,7 @@ const ChatListItem = (props: ChatListItemProps) => {
     api.chat.getChatDetails.useQuery({ chatId: props.chatId });
 
   return (
-    <div className="py-1 pl-2 pr-3">
+    <div className="px-2 py-1">
       <button
         className="flex w-full rounded-md bg-zinc-600 bg-opacity-60 p-2 text-left hover:bg-opacity-80"
         onClick={() => {
