@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { number, z } from "zod";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { clerkClient } from "@clerk/nextjs/server";
 import { User } from "@clerk/nextjs/dist/api";
@@ -109,4 +109,16 @@ export const chatRouter = createTRPCRouter({
 
     return chatListIds;
   }),
+
+  getLastMessage: privateProcedure
+    .input(z.object({ chatId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const lastMessage = await ctx.prisma.chatMessage.findFirst({
+        where: { chatId: input.chatId },
+        select: { message: true, userId: true },
+        orderBy: { id: "desc" },
+      });
+
+      return lastMessage;
+    }),
 });

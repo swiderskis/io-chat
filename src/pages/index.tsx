@@ -268,8 +268,29 @@ interface ChatListItemProps {
 }
 
 const ChatListItem = (props: ChatListItemProps) => {
+  const user = useUser();
+  const ctx = api.useContext();
+
   const { data: chatDetails, isLoading: chatDetailsLoading } =
     api.chat.getChatDetails.useQuery({ chatId: props.chatId });
+
+  const { data: lastChatMessage } = api.chat.getLastMessage.useQuery({
+    chatId: props.chatId,
+  });
+
+  const channel = supabase
+    .channel(`${props.chatId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "ChatMessage",
+        filter: `chatId=eq.${props.chatId}`,
+      },
+      (_payload) => void ctx.chat.getLastMessage.invalidate()
+    )
+    .subscribe();
 
   return (
     <div className="px-2 py-1">
@@ -298,7 +319,15 @@ const ChatListItem = (props: ChatListItemProps) => {
           ) : (
             <span>{chatDetails[0]?.userDetails?.username}</span>
           )}
-          <span className="text-xs">Message PLACEHOLDER</span>
+          <span className="text-xs">
+            {lastChatMessage &&
+            user.user &&
+            user.user.id &&
+            lastChatMessage.userId === user.user.id
+              ? "You: "
+              : null}
+            {lastChatMessage ? lastChatMessage.message : <i>No messages</i>}
+          </span>
         </div>
       </button>
     </div>
