@@ -1,7 +1,7 @@
-import { number, z } from "zod";
+import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { clerkClient } from "@clerk/nextjs/server";
-import { User } from "@clerk/nextjs/dist/api";
+import type { User } from "@clerk/nextjs/dist/api";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { TRPCError } from "@trpc/server";

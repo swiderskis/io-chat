@@ -2,7 +2,7 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { FormEvent, Fragment, useState } from "react";
+import { type FormEvent, Fragment, useState } from "react";
 import { api } from "~/utils/api";
 import Loading from "~/components/Loading";
 import defaultProfilePicture from "~/assets/default-profile-picture.png";
@@ -66,7 +66,7 @@ const ChatWindow = (props: ChatWindowProps) => {
       chatId: props.chatId,
     });
 
-  const channel = supabase
+  supabase
     .channel(`${props.chatId}`)
     .on(
       "postgres_changes",
@@ -338,7 +338,7 @@ const ChatListItem = (props: ChatListItemProps) => {
     chatId: props.chatId,
   });
 
-  const channel = supabase
+  supabase
     .channel(`${props.chatId}`)
     .on(
       "postgres_changes",
