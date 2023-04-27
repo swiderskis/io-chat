@@ -264,7 +264,7 @@ const ChatList = (props: ChatListProps) => {
   const searchUser = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    searchUserQuery();
+    void searchUserQuery();
   };
 
   if (chatIdsLoading)
