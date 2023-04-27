@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import genericToastError from "~/utils/genericToastError";
 import { createClient } from "@supabase/supabase-js";
 import { env } from "~/env.mjs";
+import TextInput from "~/components/TextInput";
 
 const supabase = createClient(
   env.NEXT_PUBLIC_SUPABASE_URL,
@@ -220,23 +221,9 @@ const MessageBar = (props: MessageBarProps) => {
       className="flex h-fit w-full flex-row items-center p-2"
       onSubmit={sendMessage}
     >
-      <input
-        className="h-10 grow rounded-full bg-zinc-500 px-4 py-2 focus:outline-none"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      ></input>
-      <div className={`ml-2 ${message.length === 0 ? "hidden" : "block"}`}>
-        <button className="rounded-full bg-lime-950 p-2 hover:rounded-xl active:bg-lime-900">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-6 w-6"
-          >
-            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-          </svg>
-        </button>
-      </div>
+      <TextInput value={message} onChange={setMessage}>
+        <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+      </TextInput>
     </form>
   );
 };
@@ -247,8 +234,38 @@ interface ChatListProps {
 }
 
 const ChatList = (props: ChatListProps) => {
+  const [usernameSearch, setUsernameSearch] = useState("");
+  const [showUsernameSearch, setShowUsernameSearch] = useState(false);
+
   const { data: chatIds, isLoading: chatIdsLoading } =
     api.chat.getChatList.useQuery();
+
+  const { data: chatId, refetch: searchUserQuery } =
+    api.chat.openOrCreateChat.useQuery(
+      {
+        username: usernameSearch,
+      },
+      {
+        enabled: false,
+        onSuccess: () => {
+          if (chatId) props.setSelectedChatId(chatId);
+        },
+        onError: (e) => {
+          if (e.data?.httpStatus === 404) {
+            toast.error("User not found!");
+            return;
+          }
+
+          genericToastError();
+        },
+      }
+    );
+
+  const searchUser = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    searchUserQuery();
+  };
 
   if (chatIdsLoading)
     return (
@@ -261,6 +278,36 @@ const ChatList = (props: ChatListProps) => {
 
   return (
     <nav className="no-scrollbar flex h-full w-1/6 flex-col overflow-y-auto bg-zinc-800 py-1">
+      <div className="flex w-full justify-center px-2 py-1">
+        <button
+          className="z-10 w-full rounded-sm border-2 border-zinc-700 bg-zinc-600 py-1 hover:bg-zinc-500"
+          onClick={() => {
+            showUsernameSearch ? null : setUsernameSearch("");
+            setShowUsernameSearch((showNewChatInput) => !showNewChatInput);
+          }}
+        >
+          Search user
+        </button>
+      </div>
+      <div className="relative">
+        <div
+          className={`w-full ${
+            showUsernameSearch
+              ? "translate-y-0"
+              : "absolute -translate-y-full duration-0"
+          } justify-center px-2 py-1 transition ease-in`}
+        >
+          <form className="flex" onSubmit={searchUser}>
+            <TextInput value={usernameSearch} onChange={setUsernameSearch}>
+              <path
+                fill-rule="evenodd"
+                d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z"
+                clip-rule="evenodd"
+              />
+            </TextInput>
+          </form>
+        </div>
+      </div>
       {chatIds.map((chatId) => (
         <Fragment key={chatId}>
           <ChatListItem

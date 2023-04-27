@@ -121,4 +121,43 @@ export const chatRouter = createTRPCRouter({
 
       return lastMessage;
     }),
+
+  openOrCreateChat: privateProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+
+      const searchedUser = (
+        await clerkClient.users.getUserList({
+          username: [input.username],
+        })
+      ).map(filterUserDetails);
+
+      if (!searchedUser || !searchedUser[0])
+        throw new TRPCError({ code: "NOT_FOUND" });
+
+      const chat = await ctx.prisma.chat.findFirst({
+        where: {
+          chatMembers: {
+            every: { userId: { in: [userId, searchedUser[0]?.id] } },
+          },
+        },
+      });
+
+      if (!chat) {
+        const newChat = await ctx.prisma.chat.create({
+          data: {
+            chatMembers: {
+              createMany: {
+                data: [{ userId: userId }, { userId: searchedUser[0]?.id }],
+              },
+            },
+          },
+        });
+
+        return newChat.id;
+      }
+
+      return chat.id;
+    }),
 });
