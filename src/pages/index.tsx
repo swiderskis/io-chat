@@ -36,7 +36,10 @@ const Home: NextPage = () => {
           </div>
         </header>
         <main className="flex h-[calc(100%-36px)] w-full flex-row">
-          <ChatList setSelectedChatId={setSelectedChatId} />
+          <ChatList
+            selectedChatId={selectedChatId}
+            setSelectedChatId={setSelectedChatId}
+          />
           {selectedChatId ? (
             <ChatWindow chatId={selectedChatId} />
           ) : (
@@ -239,6 +242,7 @@ const MessageBar = (props: MessageBarProps) => {
 };
 
 interface ChatListProps {
+  selectedChatId: number | undefined;
   setSelectedChatId: (chatId: number) => void;
 }
 
@@ -262,6 +266,7 @@ const ChatList = (props: ChatListProps) => {
           <ChatListItem
             chatId={chatId}
             setSelectedChatId={props.setSelectedChatId}
+            selected={chatId === props.selectedChatId ? true : false}
           />
         </Fragment>
       ))}
@@ -272,6 +277,7 @@ const ChatList = (props: ChatListProps) => {
 interface ChatListItemProps {
   chatId: number;
   setSelectedChatId: (chatId: number) => void;
+  selected: boolean;
 }
 
 const ChatListItem = (props: ChatListItemProps) => {
@@ -302,7 +308,9 @@ const ChatListItem = (props: ChatListItemProps) => {
   return (
     <div className="px-2 py-1">
       <button
-        className="flex w-full rounded-md bg-zinc-600 bg-opacity-60 p-2 text-left hover:bg-opacity-80"
+        className={`flex w-full rounded-md bg-zinc-600 ${
+          props.selected ? "bg-opacity-60" : "bg-opacity-40"
+        } p-2 text-left hover:bg-opacity-80`}
         onClick={() => {
           props.setSelectedChatId(props.chatId);
         }}
