@@ -248,7 +248,7 @@ const ChatList = (props: ChatListProps) => {
 
   if (chatIdsLoading)
     return (
-      <div className="w-1/6">
+      <div className="w-1/6 bg-zinc-800">
         <Loading />
       </div>
     );
