@@ -320,19 +320,19 @@ const ChatListItem = (props: ChatListItemProps) => {
         ) : (
           <ProfilePictureOrDefault width={44} height={44} />
         )}
-        <div className="-mt-[2px] flex flex-col px-3">
+        <div className="-mt-[2px] flex flex-col truncate px-3">
           {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
             <span>Group chat</span>
           ) : (
             <span>{chatDetails[0]?.userDetails?.username}</span>
           )}
-          <span className="text-xs">
+          <span className="truncate text-xs">
             {lastChatMessage &&
             user.user &&
             user.user.id &&
             lastChatMessage.userId === user.user.id
               ? "You: "
-              : null}
+              : ""}
             {lastChatMessage ? lastChatMessage.message : <i>No messages</i>}
           </span>
         </div>
