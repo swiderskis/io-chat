@@ -87,7 +87,8 @@ const ChatWindow = (props: ChatWindowProps) => {
       </div>
     );
 
-  if (!user.user || !messages) return <div>Error</div>;
+  if (!user.user || !messages)
+    return <div className="flex w-2/3 grow flex-col">Error</div>;
 
   return (
     <div className="flex w-2/3 grow flex-col">
@@ -260,7 +261,7 @@ const ChatList = (props: ChatListProps) => {
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
 
-  const { data: chatIdList, isLoading: chatIdListLoading } =
+  const { data: chatList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
 
   const { data: chatId, refetch: searchUserQuery } =
@@ -297,7 +298,7 @@ const ChatList = (props: ChatListProps) => {
       </div>
     );
 
-  if (!chatIdList) return <div>Error</div>;
+  if (!chatList) return <div className="w-1/6 bg-zinc-800">Error</div>;
 
   return (
     <nav className="no-scrollbar flex h-full w-1/6 flex-col overflow-y-auto bg-zinc-800 py-1">
@@ -335,12 +336,15 @@ const ChatList = (props: ChatListProps) => {
           </form>
         </div>
       </div>
-      {chatIdList.map((chatId) => (
-        <Fragment key={chatId}>
+      {chatList.map((chatDetails) => (
+        <Fragment key={chatDetails.chatId}>
           <ChatListItem
-            chatId={chatId}
+            chatId={chatDetails.chatId}
             setSelectedChatId={props.setSelectedChatId}
-            selected={chatId === props.selectedChatId ? true : false}
+            selected={chatDetails.chatId === props.selectedChatId}
+            lastMessage={chatDetails.message}
+            lastMessageUserId={chatDetails.userId}
+            lastMessageSentAt={chatDetails.sentAt}
           />
         </Fragment>
       ))}
@@ -352,6 +356,9 @@ interface ChatListItemProps {
   chatId: number;
   setSelectedChatId: (chatId: number) => void;
   selected: boolean;
+  lastMessage: string;
+  lastMessageUserId: string;
+  lastMessageSentAt: Date;
 }
 
 const ChatListItem = (props: ChatListItemProps) => {
@@ -360,10 +367,6 @@ const ChatListItem = (props: ChatListItemProps) => {
 
   const { data: chatDetails, isLoading: chatDetailsLoading } =
     api.chat.getChatDetails.useQuery({ chatId: props.chatId });
-
-  const { data: lastChatMessage } = api.chat.getLastMessage.useQuery({
-    chatId: props.chatId,
-  });
 
   supabase
     .channel(`${props.chatId}`)
@@ -375,11 +378,11 @@ const ChatListItem = (props: ChatListItemProps) => {
         table: "ChatMessage",
         filter: `chatId=eq.${props.chatId}`,
       },
-      (_payload) => void ctx.chat.getLastMessage.invalidate()
+      (_payload) => {
+        void ctx.chat.getChatList.invalidate();
+      }
     )
     .subscribe();
-
-  if (!lastChatMessage) return <></>;
 
   return (
     <div className="px-2 py-1">
@@ -411,23 +414,23 @@ const ChatListItem = (props: ChatListItemProps) => {
             <span>{chatDetails[0]?.userDetails?.username}</span>
           )}
           <span className="truncate text-xs">
-            {lastChatMessage &&
+            {props.lastMessage &&
             user.user &&
             user.user.id &&
-            lastChatMessage.userId === user.user.id
+            props.lastMessageUserId === user.user.id
               ? "You: "
               : ""}
-            {lastChatMessage.message}
+            {props.lastMessage}
           </span>
         </div>
         <div className="flex grow flex-col p-1 text-end text-xs">
           <span>
-            {lastChatMessage.sentAt.getDate()}/
-            {`0${lastChatMessage.sentAt.getMonth() + 1}`.slice(-2)}
+            {props.lastMessageSentAt.getDate()}/
+            {`0${props.lastMessageSentAt.getMonth() + 1}`.slice(-2)}
           </span>
           <span>
-            {lastChatMessage.sentAt.getHours()}:
-            {`0${lastChatMessage.sentAt.getMinutes()}`.slice(-2)}
+            {props.lastMessageSentAt.getHours()}:
+            {`0${props.lastMessageSentAt.getMinutes()}`.slice(-2)}
           </span>
         </div>
       </button>

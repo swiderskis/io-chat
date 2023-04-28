@@ -107,7 +107,14 @@ export const chatRouter = createTRPCRouter({
 
     const chatListIds = chatList.map((id) => id.chatId);
 
-    return chatListIds;
+    const chatDetails = await ctx.prisma.chatMessage.findMany({
+      select: { chatId: true, message: true, sentAt: true, userId: true },
+      where: { chatId: { in: chatListIds } },
+      orderBy: { sentAt: "desc" },
+      distinct: ["chatId"],
+    });
+
+    return chatDetails;
   }),
 
   getLastMessage: privateProcedure
