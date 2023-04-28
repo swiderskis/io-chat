@@ -309,7 +309,7 @@ const ChatList = (props: ChatListProps) => {
             <TextInput
               value={usernameSearch}
               onChange={setUsernameSearch}
-              disabled={chatIdLoading}
+              disabled={false}
             >
               <path
                 fill-rule="evenodd"
