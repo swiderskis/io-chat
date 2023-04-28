@@ -259,29 +259,26 @@ const ChatList = (props: ChatListProps) => {
   const { data: chatIdList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
 
-  const {
-    data: chatId,
-    isLoading: chatIdLoading,
-    refetch: searchUserQuery,
-  } = api.chat.openOrCreateChat.useQuery(
-    {
-      username: usernameSearch,
-    },
-    {
-      enabled: false,
-      onSuccess: () => {
-        if (chatId) props.setSelectedChatId(chatId);
+  const { data: chatId, refetch: searchUserQuery } =
+    api.chat.openOrCreateChat.useQuery(
+      {
+        username: usernameSearch,
       },
-      onError: (e) => {
-        if (e.data?.httpStatus === 404) {
-          toast.error("User not found!");
-          return;
-        }
+      {
+        enabled: false,
+        onSuccess: () => {
+          if (chatId) props.setSelectedChatId(chatId);
+        },
+        onError: (e) => {
+          if (e.data?.httpStatus === 404) {
+            toast.error("User not found!");
+            return;
+          }
 
-        genericToastError();
-      },
-    }
-  );
+          genericToastError();
+        },
+      }
+    );
 
   const searchUser = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
