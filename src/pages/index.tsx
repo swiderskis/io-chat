@@ -419,7 +419,7 @@ const ChatListItem = (props: ChatListItemProps) => {
         <div className="flex grow flex-col p-1 text-end text-xs">
           <span>
             {lastChatMessage.sentAt.getDate()}/
-            {`0${lastChatMessage.sentAt.getMonth() + 1}`.slice(-2)}{" "}
+            {`0${lastChatMessage.sentAt.getMonth() + 1}`.slice(-2)}
           </span>
           <span>
             {lastChatMessage.sentAt.getHours()}:
