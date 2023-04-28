@@ -402,7 +402,7 @@ const ChatListItem = (props: ChatListItemProps) => {
             lastChatMessage.userId === user.user.id
               ? "You: "
               : ""}
-            {lastChatMessage ? lastChatMessage.message : <i>No messages</i>}
+            {lastChatMessage.message}
           </span>
         </div>
       </button>
