@@ -97,6 +97,7 @@ const ChatWindow = (props: ChatWindowProps) => {
           <Fragment key={messageDetails.message.id}>
             <ChatMessage
               message={messageDetails.message.message}
+              timestamp={messageDetails.message.sentAt}
               senderId={messageDetails.message.userId}
               userId={user.user.id}
               profileImageDetails={messageDetails.userDetails}
@@ -146,6 +147,7 @@ const ChatHeader = (props: ChatHeaderProps) => {
 
 interface ChatMessageProps {
   message: string;
+  timestamp: Date;
   senderId: string;
   userId: string;
   profileImageDetails: { id: string; profileImageUrl: string } | undefined;
@@ -158,6 +160,12 @@ const ChatMessage = (props: ChatMessageProps) => {
         props.senderId === props.userId ? " justify-end" : ""
       }`}
     >
+      {props.senderId === props.userId ? (
+        <span className="flex items-end pb-2 pr-2 text-xs">
+          {props.timestamp.getHours()}:
+          {`0${props.timestamp.getMinutes()}`.slice(-2)}
+        </span>
+      ) : null}
       {props.senderId === props.userId ? null : (
         <div className="pr-2">
           <ProfilePictureOrDefault
@@ -174,6 +182,12 @@ const ChatMessage = (props: ChatMessageProps) => {
       >
         <span>{props.message}</span>
       </div>
+      {props.senderId === props.userId ? null : (
+        <span className="flex items-end pb-2 pl-2 text-xs">
+          {props.timestamp.getHours()}:
+          {`0${props.timestamp.getMinutes()}`.slice(-2)}
+        </span>
+      )}
     </div>
   );
 };
