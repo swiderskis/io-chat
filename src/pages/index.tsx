@@ -364,6 +364,8 @@ const ChatListItem = (props: ChatListItemProps) => {
     )
     .subscribe();
 
+  if (!lastChatMessage) return <></>;
+
   return (
     <div className="px-2 py-1">
       <button
