@@ -161,7 +161,9 @@ const ChatMessage = (props: ChatMessageProps) => {
       }`}
     >
       {props.senderId === props.userId ? (
-        <span className="flex items-end pb-2 pr-2 text-xs">
+        <span className="flex items-end pb-2 pr-1 text-xs">
+          {props.timestamp.getDate()}/
+          {`0${props.timestamp.getMonth() + 1}`.slice(-2)}{" "}
           {props.timestamp.getHours()}:
           {`0${props.timestamp.getMinutes()}`.slice(-2)}
         </span>
@@ -184,6 +186,8 @@ const ChatMessage = (props: ChatMessageProps) => {
       </div>
       {props.senderId === props.userId ? null : (
         <span className="flex items-end pb-2 pl-2 text-xs">
+          {props.timestamp.getDate()}/
+          {`0${props.timestamp.getMonth() + 1}`.slice(-2)}{" "}
           {props.timestamp.getHours()}:
           {`0${props.timestamp.getMinutes()}`.slice(-2)}
         </span>
