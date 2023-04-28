@@ -76,7 +76,10 @@ const ChatWindow = (props: ChatWindowProps) => {
         table: "ChatMessage",
         filter: `chatId=eq.${props.chatId}`,
       },
-      (_payload) => void ctx.chat.getMessages.invalidate()
+      (_payload) => {
+        void ctx.chat.getMessages.invalidate();
+        void ctx.chat.getChatList.invalidate();
+      }
     )
     .subscribe();
 
@@ -261,6 +264,8 @@ const ChatList = (props: ChatListProps) => {
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
 
+  const ctx = api.useContext();
+
   const { data: chatList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
 
@@ -363,26 +368,9 @@ interface ChatListItemProps {
 
 const ChatListItem = (props: ChatListItemProps) => {
   const user = useUser();
-  const ctx = api.useContext();
 
   const { data: chatDetails, isLoading: chatDetailsLoading } =
     api.chat.getChatDetails.useQuery({ chatId: props.chatId });
-
-  supabase
-    .channel(`${props.chatId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "ChatMessage",
-        filter: `chatId=eq.${props.chatId}`,
-      },
-      (_payload) => {
-        void ctx.chat.getChatList.invalidate();
-      }
-    )
-    .subscribe();
 
   return (
     <div className="px-2 py-1">
