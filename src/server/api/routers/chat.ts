@@ -115,7 +115,7 @@ export const chatRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const lastMessage = await ctx.prisma.chatMessage.findFirst({
         where: { chatId: input.chatId },
-        select: { message: true, userId: true },
+        select: { message: true, userId: true, sentAt: true },
         orderBy: { id: "desc" },
       });
 
