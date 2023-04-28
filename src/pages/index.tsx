@@ -185,30 +185,31 @@ interface MessageBarProps {
 const MessageBar = (props: MessageBarProps) => {
   const [message, setMessage] = useState("");
 
-  const { mutate: postMessage } = api.chat.sendMessage.useMutation({
-    onSuccess: () => {
-      setMessage("");
-    },
-    onError: (e) => {
-      if (e.data?.zodError) {
-        const err = e.data.zodError.fieldErrors.message;
+  const { mutate: postMessage, isLoading: postMessageLoading } =
+    api.chat.sendMessage.useMutation({
+      onSuccess: () => {
+        setMessage("");
+      },
+      onError: (e) => {
+        if (e.data?.zodError) {
+          const err = e.data.zodError.fieldErrors.message;
 
-        err && err[0] ? toast.error(err[0]) : genericToastError();
+          err && err[0] ? toast.error(err[0]) : genericToastError();
 
-        return;
-      }
+          return;
+        }
 
-      if (e.data?.httpStatus === 429) {
-        toast.error(
-          "Slow down! You are trying to send too many messages at once"
-        );
+        if (e.data?.httpStatus === 429) {
+          toast.error(
+            "Slow down! You are trying to send too many messages at once"
+          );
 
-        return;
-      }
+          return;
+        }
 
-      genericToastError();
-    },
-  });
+        genericToastError();
+      },
+    });
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -221,7 +222,11 @@ const MessageBar = (props: MessageBarProps) => {
       className="flex h-fit w-full flex-row items-center p-2"
       onSubmit={sendMessage}
     >
-      <TextInput value={message} onChange={setMessage}>
+      <TextInput
+        value={message}
+        onChange={setMessage}
+        disabled={postMessageLoading}
+      >
         <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
       </TextInput>
     </form>
@@ -237,29 +242,32 @@ const ChatList = (props: ChatListProps) => {
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
 
-  const { data: chatIds, isLoading: chatIdsLoading } =
+  const { data: chatIdList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
 
-  const { data: chatId, refetch: searchUserQuery } =
-    api.chat.openOrCreateChat.useQuery(
-      {
-        username: usernameSearch,
+  const {
+    data: chatId,
+    isLoading: chatIdLoading,
+    refetch: searchUserQuery,
+  } = api.chat.openOrCreateChat.useQuery(
+    {
+      username: usernameSearch,
+    },
+    {
+      enabled: false,
+      onSuccess: () => {
+        if (chatId) props.setSelectedChatId(chatId);
       },
-      {
-        enabled: false,
-        onSuccess: () => {
-          if (chatId) props.setSelectedChatId(chatId);
-        },
-        onError: (e) => {
-          if (e.data?.httpStatus === 404) {
-            toast.error("User not found!");
-            return;
-          }
+      onError: (e) => {
+        if (e.data?.httpStatus === 404) {
+          toast.error("User not found!");
+          return;
+        }
 
-          genericToastError();
-        },
-      }
-    );
+        genericToastError();
+      },
+    }
+  );
 
   const searchUser = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -267,14 +275,14 @@ const ChatList = (props: ChatListProps) => {
     void searchUserQuery();
   };
 
-  if (chatIdsLoading)
+  if (chatIdListLoading)
     return (
       <div className="w-1/6 bg-zinc-800">
         <Loading />
       </div>
     );
 
-  if (!chatIds) return <div>Error</div>;
+  if (!chatIdList) return <div>Error</div>;
 
   return (
     <nav className="no-scrollbar flex h-full w-1/6 flex-col overflow-y-auto bg-zinc-800 py-1">
@@ -298,7 +306,11 @@ const ChatList = (props: ChatListProps) => {
           } justify-center px-2 py-1 transition ease-in`}
         >
           <form className="flex" onSubmit={searchUser}>
-            <TextInput value={usernameSearch} onChange={setUsernameSearch}>
+            <TextInput
+              value={usernameSearch}
+              onChange={setUsernameSearch}
+              disabled={chatIdLoading}
+            >
               <path
                 fill-rule="evenodd"
                 d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z"
@@ -308,7 +320,7 @@ const ChatList = (props: ChatListProps) => {
           </form>
         </div>
       </div>
-      {chatIds.map((chatId) => (
+      {chatIdList.map((chatId) => (
         <Fragment key={chatId}>
           <ChatListItem
             chatId={chatId}

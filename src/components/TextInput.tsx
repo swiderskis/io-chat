@@ -2,6 +2,7 @@ interface TextInputProps {
   value: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
+  disabled: boolean;
 }
 
 const TextInput = (props: TextInputProps) => {
@@ -11,9 +12,13 @@ const TextInput = (props: TextInputProps) => {
         className="h-10 grow rounded-full bg-zinc-500 px-4 py-2 focus:outline-none"
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
+        disabled={props.disabled}
       ></input>
       <div className={`ml-2 ${props.value.length === 0 ? "hidden" : "block"}`}>
-        <button className="rounded-full bg-lime-950 p-2 hover:rounded-xl active:bg-lime-900">
+        <button
+          className="rounded-full bg-lime-950 p-2 hover:rounded-xl active:bg-lime-900"
+          disabled={props.disabled}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
