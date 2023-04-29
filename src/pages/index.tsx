@@ -186,7 +186,7 @@ const ChatHeader = (props: ChatHeaderProps) => {
       )}
       <div className="-mt-[2px] flex items-center px-3 pb-1 text-2xl">
         {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
-          <span>Group chat</span>
+          <span>User</span>
         ) : (
           <span>{chatDetails[0]?.userDetails?.username}</span>
         )}
@@ -463,7 +463,7 @@ const ChatListItem = (props: ChatListItemProps) => {
         )}
         <div className="-mt-[2px] flex flex-col truncate px-3">
           {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
-            <span>Group chat</span>
+            <span>User</span>
           ) : (
             <span>{chatDetails[0]?.userDetails?.username}</span>
           )}
