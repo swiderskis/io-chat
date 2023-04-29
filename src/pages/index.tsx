@@ -323,6 +323,8 @@ const ChatList = (props: ChatListProps) => {
       {
         enabled: false,
         onSuccess: () => {
+          setUsernameSearch("");
+          setShowUsernameSearch(false);
           if (chatId) props.setSelectedChatId(chatId);
         },
         onError: (e) => {
@@ -340,6 +342,8 @@ const ChatList = (props: ChatListProps) => {
     e.preventDefault();
 
     void searchUserQuery();
+
+    props.setShowChatListMobile();
   };
 
   if (chatIdListLoading)
