@@ -26,7 +26,7 @@ const Home: NextPage = () => {
       <Head>
         <title>io.chat</title>
         <meta name="description" content="io.chat" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <div className="flex h-screen w-screen flex-col">
         <header className="flex h-fit w-full bg-zinc-950 px-2 py-1">

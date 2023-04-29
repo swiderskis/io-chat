@@ -9,7 +9,7 @@ const SignIn: NextPage = () => {
       <Head>
         <title>io.chat - Sign in</title>
         <meta name="description" content="Sign in to io.chat"></meta>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <main className="flex min-h-screen items-center justify-center bg-zinc-800 md:items-start md:bg-zinc-700">
         <div className="mt-0 flex h-full w-full max-w-3xl flex-col justify-center bg-zinc-800 md:mt-16 md:h-fit md:rounded-md md:p-16">
