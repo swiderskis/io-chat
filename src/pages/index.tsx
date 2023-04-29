@@ -44,7 +44,7 @@ const Home: NextPage = () => {
           {selectedChatId ? (
             <ChatWindow chatId={selectedChatId} />
           ) : (
-            <div className="flex grow flex-col"></div>
+            <div className="flex w-[calc(100%-80px)] flex-col"></div>
           )}
         </main>
       </div>
@@ -84,16 +84,16 @@ const ChatWindow = (props: ChatWindowProps) => {
 
   if (messagesLoading)
     return (
-      <div className="grow">
+      <div className="w-[calc(100%-80px)]">
         <Loading />
       </div>
     );
 
   if (!user.user || !messages)
-    return <div className="flex grow flex-col">Error</div>;
+    return <div className="flex w-[calc(100%-80px)] flex-col">Error</div>;
 
   return (
-    <div className="flex grow flex-col">
+    <div className="flex w-[calc(100%-80px)] flex-col">
       <ChatHeader chatId={props.chatId} />
       <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
         {messages.map((messageDetails) => (
