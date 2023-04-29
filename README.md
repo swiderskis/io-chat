@@ -1,28 +1,28 @@
-# Create T3 App
+# io-chat
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+![logo](docs/images/logo.png)
 
-## What's next? How do I make an app with this?
+## About
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+A chat app that allows you to message your friends in real time! 📲
+Built using the [T3 Stack](https://create.t3.gg/).
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+This app is powered by [Supabase](https://supabase.com/), [Clerk](https://clerk.com/), and [Upstash](https://upstash.com/).
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Setting up
 
-## Learn More
+After cloning the repo and installing the required packages using `npm i`:
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+1. Set up projects on [Supabase](https://supabase.com/), [Clerk](https://clerk.com/), and [Upstash](https://upstash.com/), and set the environment variables from them.
+2. Migrate the Prisma schema to Supabase using `npx prisma db push`.
+3. Enable realtime for ChatMessage table on Supabase (details [here](https://supabase.com/docs/guides/realtime/subscribing-to-database-changes)).
+4. _(Optional)_ Deploy the project to a platform, such as [Vercel](https://vercel.com/) (recommended) or [Netlify](https://www.netlify.com/).
+5. Enjoy!
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Credits
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+[Flowbite](https://flowbite.com/docs/components/spinner/) - loading spinner
 
-## How do I deploy this?
+[Heroicons](https://heroicons.com/) - send icon, search icon, burger icon
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+[Icons8](https://icons8.com/icon/13751/speech-bubble) - favicon
