@@ -19,6 +19,7 @@ const supabase = createClient(
 
 const Home: NextPage = () => {
   const [selectedChatId, setSelectedChatId] = useState<number>();
+  const [showChatListMobile, setShowChatListMobile] = useState(true);
 
   return (
     <>
@@ -29,7 +30,28 @@ const Home: NextPage = () => {
       </Head>
       <div className="flex h-screen w-screen flex-col">
         <header className="flex h-fit w-full bg-zinc-950 px-2 py-1">
-          <span>io.chat</span>
+          <button
+            className="block md:hidden"
+            onClick={() =>
+              setShowChatListMobile((showChatListMobile) => !showChatListMobile)
+            }
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
+            </svg>
+          </button>
+          <span className="pl-2 md:pl-0">io.chat</span>
           <div className="flex grow justify-end">
             <SignOutButton>
               <button>Sign out</button>
@@ -40,11 +62,20 @@ const Home: NextPage = () => {
           <ChatList
             selectedChatId={selectedChatId}
             setSelectedChatId={setSelectedChatId}
+            showChatListMobile={showChatListMobile}
+            setShowChatListMobile={() => setShowChatListMobile(false)}
           />
           {selectedChatId ? (
-            <ChatWindow chatId={selectedChatId} />
+            <ChatWindow
+              chatId={selectedChatId}
+              showChatListMobile={showChatListMobile}
+            />
           ) : (
-            <div className="flex w-[calc(100%-80px)] flex-col"></div>
+            <div
+              className={`${
+                showChatListMobile ? "hidden md:flex" : "flex"
+              } w-screen flex-col md:w-[calc(100%-80px)]`}
+            ></div>
           )}
         </main>
       </div>
@@ -54,6 +85,7 @@ const Home: NextPage = () => {
 
 interface ChatWindowProps {
   chatId: number;
+  showChatListMobile: boolean;
 }
 
 const ChatWindow = (props: ChatWindowProps) => {
@@ -84,16 +116,32 @@ const ChatWindow = (props: ChatWindowProps) => {
 
   if (messagesLoading)
     return (
-      <div className="w-[calc(100%-80px)]">
+      <div
+        className={`${
+          props.showChatListMobile ? "hidden md:flex" : "flex"
+        } w-screen flex-col md:w-[calc(100%-80px)]`}
+      >
         <Loading />
       </div>
     );
 
   if (!user.user || !messages)
-    return <div className="flex w-[calc(100%-80px)] flex-col">Error</div>;
+    return (
+      <div
+        className={`${
+          props.showChatListMobile ? "hidden md:flex" : "flex"
+        } w-screen flex-col md:w-[calc(100%-80px)]`}
+      >
+        Error
+      </div>
+    );
 
   return (
-    <div className="flex w-[calc(100%-80px)] flex-col">
+    <div
+      className={`${
+        props.showChatListMobile ? "hidden md:flex" : "flex"
+      } w-screen flex-col md:w-[calc(100%-80px)]`}
+    >
       <ChatHeader chatId={props.chatId} />
       <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
         {messages.map((messageDetails) => (
@@ -256,13 +304,13 @@ const MessageBar = (props: MessageBarProps) => {
 interface ChatListProps {
   selectedChatId: number | undefined;
   setSelectedChatId: (chatId: number) => void;
+  showChatListMobile: boolean;
+  setShowChatListMobile: () => void;
 }
 
 const ChatList = (props: ChatListProps) => {
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
-
-  const ctx = api.useContext();
 
   const { data: chatList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
@@ -296,15 +344,32 @@ const ChatList = (props: ChatListProps) => {
 
   if (chatIdListLoading)
     return (
-      <div className="w-80 bg-zinc-800">
+      <div
+        className={`no-scrollbar ${
+          props.showChatListMobile ? "flex" : "hidden md:flex"
+        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-80`}
+      >
         <Loading />
       </div>
     );
 
-  if (!chatList) return <div className="w-80 bg-zinc-800">Error</div>;
+  if (!chatList)
+    return (
+      <div
+        className={`no-scrollbar ${
+          props.showChatListMobile ? "flex" : "hidden md:flex"
+        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-80`}
+      >
+        Error
+      </div>
+    );
 
   return (
-    <nav className="no-scrollbar flex h-full w-80 flex-col overflow-y-auto bg-zinc-800 py-1">
+    <nav
+      className={`no-scrollbar ${
+        props.showChatListMobile ? "flex" : "hidden md:flex"
+      } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-80`}
+    >
       <div className="flex w-full justify-center px-2 py-1">
         <button
           className="z-10 w-full rounded-sm border-2 border-zinc-700 bg-zinc-600 py-1 hover:bg-zinc-500"
@@ -348,6 +413,7 @@ const ChatList = (props: ChatListProps) => {
             lastMessage={chatDetails.message}
             lastMessageUserId={chatDetails.userId}
             lastMessageSentAt={chatDetails.sentAt}
+            setShowChatListMobile={props.setShowChatListMobile}
           />
         </Fragment>
       ))}
@@ -362,6 +428,7 @@ interface ChatListItemProps {
   lastMessage: string;
   lastMessageUserId: string;
   lastMessageSentAt: Date;
+  setShowChatListMobile: () => void;
 }
 
 const ChatListItem = (props: ChatListItemProps) => {
@@ -378,6 +445,7 @@ const ChatListItem = (props: ChatListItemProps) => {
         } p-2 text-left hover:bg-opacity-80`}
         onClick={() => {
           props.setSelectedChatId(props.chatId);
+          props.setShowChatListMobile();
         }}
       >
         {chatDetails ? (
