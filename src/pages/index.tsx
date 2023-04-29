@@ -136,13 +136,12 @@ const ChatHeader = (props: ChatHeaderProps) => {
       ) : (
         <ProfilePictureOrDefault width={44} height={44} />
       )}
-      <div className="-mt-[2px] flex flex-col px-3">
+      <div className="-mt-[2px] flex items-center px-3 pb-1 text-2xl">
         {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
           <span>Group chat</span>
         ) : (
           <span>{chatDetails[0]?.userDetails?.username}</span>
         )}
-        <span className="text-xs">Last online PLACEHOLDER</span>
       </div>
     </div>
   );
