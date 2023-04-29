@@ -74,7 +74,7 @@ const Home: NextPage = () => {
             <div
               className={`${
                 showChatListMobile ? "hidden md:flex" : "flex"
-              } w-screen flex-col md:w-[calc(100%-80px)]`}
+              } w-screen flex-col md:w-[calc(100%-384px)]`}
             ></div>
           )}
         </main>
@@ -119,7 +119,7 @@ const ChatWindow = (props: ChatWindowProps) => {
       <div
         className={`${
           props.showChatListMobile ? "hidden md:flex" : "flex"
-        } w-screen flex-col md:w-[calc(100%-80px)]`}
+        } w-screen flex-col md:w-[calc(100%-384px)]`}
       >
         <Loading />
       </div>
@@ -130,7 +130,7 @@ const ChatWindow = (props: ChatWindowProps) => {
       <div
         className={`${
           props.showChatListMobile ? "hidden md:flex" : "flex"
-        } w-screen flex-col md:w-[calc(100%-80px)]`}
+        } w-screen flex-col md:w-[calc(100%-384px)]`}
       >
         Error
       </div>
@@ -140,7 +140,7 @@ const ChatWindow = (props: ChatWindowProps) => {
     <div
       className={`${
         props.showChatListMobile ? "hidden md:flex" : "flex"
-      } w-screen flex-col md:w-[calc(100%-80px)]`}
+      } w-screen flex-col md:w-[calc(100%-384px)]`}
     >
       <ChatHeader chatId={props.chatId} />
       <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
@@ -347,7 +347,7 @@ const ChatList = (props: ChatListProps) => {
       <div
         className={`no-scrollbar ${
           props.showChatListMobile ? "flex" : "hidden md:flex"
-        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-80`}
+        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
       >
         <Loading />
       </div>
@@ -358,7 +358,7 @@ const ChatList = (props: ChatListProps) => {
       <div
         className={`no-scrollbar ${
           props.showChatListMobile ? "flex" : "hidden md:flex"
-        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-80`}
+        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
       >
         Error
       </div>
@@ -368,7 +368,7 @@ const ChatList = (props: ChatListProps) => {
     <nav
       className={`no-scrollbar ${
         props.showChatListMobile ? "flex" : "hidden md:flex"
-      } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-80`}
+      } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
     >
       <div className="flex w-full justify-center px-2 py-1">
         <button
