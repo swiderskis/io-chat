@@ -44,9 +44,8 @@ const Home: NextPage = () => {
           {selectedChatId ? (
             <ChatWindow chatId={selectedChatId} />
           ) : (
-            <div className="flex w-2/3 grow flex-col"></div>
+            <div className="flex grow flex-col"></div>
           )}
-          <div className="h-full w-1/6 bg-zinc-800">Contact info</div>
         </main>
       </div>
     </>
@@ -85,16 +84,16 @@ const ChatWindow = (props: ChatWindowProps) => {
 
   if (messagesLoading)
     return (
-      <div className="w-2/3">
+      <div className="grow">
         <Loading />
       </div>
     );
 
   if (!user.user || !messages)
-    return <div className="flex w-2/3 grow flex-col">Error</div>;
+    return <div className="flex grow flex-col">Error</div>;
 
   return (
-    <div className="flex w-2/3 grow flex-col">
+    <div className="flex grow flex-col">
       <ChatHeader chatId={props.chatId} />
       <div className="no-scrollbar scroll flex h-full w-full flex-col-reverse overflow-y-auto pt-1">
         {messages.map((messageDetails) => (
@@ -298,15 +297,15 @@ const ChatList = (props: ChatListProps) => {
 
   if (chatIdListLoading)
     return (
-      <div className="w-1/6 bg-zinc-800">
+      <div className="w-80 bg-zinc-800">
         <Loading />
       </div>
     );
 
-  if (!chatList) return <div className="w-1/6 bg-zinc-800">Error</div>;
+  if (!chatList) return <div className="w-80 bg-zinc-800">Error</div>;
 
   return (
-    <nav className="no-scrollbar flex h-full w-1/6 flex-col overflow-y-auto bg-zinc-800 py-1">
+    <nav className="no-scrollbar flex h-full w-80 flex-col overflow-y-auto bg-zinc-800 py-1">
       <div className="flex w-full justify-center px-2 py-1">
         <button
           className="z-10 w-full rounded-sm border-2 border-zinc-700 bg-zinc-600 py-1 hover:bg-zinc-500"
