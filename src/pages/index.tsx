@@ -365,7 +365,7 @@ const ChatList = (props: ChatListProps) => {
           props.showChatListMobile ? "flex" : "hidden md:flex"
         } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
       >
-        {chatList ? <Loading /> : `Error`}
+        {chatList ? `Error` : <Loading />}
       </div>
     );
 
