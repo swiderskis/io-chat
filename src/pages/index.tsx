@@ -2,7 +2,7 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { type FormEvent, Fragment, useState } from "react";
+import { type FormEvent, Fragment, useState, useRef } from "react";
 import { api } from "~/utils/api";
 import Loading from "~/components/Loading";
 import defaultProfilePicture from "~/assets/default-profile-picture.png";
@@ -92,26 +92,36 @@ const ChatWindow = (props: ChatWindowProps) => {
   const user = useUser();
   const ctx = api.useContext();
 
+  const activeChatId = useRef<number>();
+
   const { data: messages, isLoading: messagesLoading } =
     api.chat.getMessages.useQuery({
       chatId: props.chatId,
     });
 
-  supabase
-    .channel(`${props.chatId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "ChatMessage",
-        filter: `chatId=eq.${props.chatId}`,
-      },
-      (_payload) => {
-        void ctx.chat.getMessages.invalidate();
-      }
-    )
-    .subscribe();
+  if (!activeChatId.current || activeChatId.current != props.chatId) {
+    if (activeChatId.current) {
+      void supabase.channel(`${activeChatId.current}`).unsubscribe();
+    }
+
+    supabase
+      .channel(`${props.chatId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "ChatMessage",
+          filter: `chatId=eq.${props.chatId}`,
+        },
+        (_payload) => {
+          void ctx.chat.getMessages.invalidate();
+        }
+      )
+      .subscribe();
+
+    activeChatId.current = props.chatId;
+  }
 
   if (messagesLoading || !user.user || !messages)
     return (
@@ -303,10 +313,14 @@ const ChatList = (props: ChatListProps) => {
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
 
+  const activeUserId = useRef<string>();
+
   const { data: chatList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
 
-  if (user && user.user && chatList) {
+  if (user && user.user && chatList && !activeUserId.current) {
+    activeUserId.current = user.user.id;
+
     const chatIds = chatList.map((chatListItem) => chatListItem.chatId);
     const chatIdsString = chatIds.toString();
 
