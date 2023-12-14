@@ -109,30 +109,18 @@ const ChatWindow = (props: ChatWindowProps) => {
       },
       (_payload) => {
         void ctx.chat.getMessages.invalidate();
-        void ctx.chat.getChatList.invalidate();
       }
     )
     .subscribe();
 
-  if (messagesLoading)
+  if (messagesLoading || !user.user || !messages)
     return (
       <div
         className={`${
           props.showChatListMobile ? "hidden md:flex" : "flex"
         } w-screen flex-col md:w-[calc(100%-384px)]`}
       >
-        <Loading />
-      </div>
-    );
-
-  if (!user.user || !messages)
-    return (
-      <div
-        className={`${
-          props.showChatListMobile ? "hidden md:flex" : "flex"
-        } w-screen flex-col md:w-[calc(100%-384px)]`}
-      >
-        Error
+        {messagesLoading ? <Loading /> : `Error`}
       </div>
     );
 
@@ -309,11 +297,35 @@ interface ChatListProps {
 }
 
 const ChatList = (props: ChatListProps) => {
+  const user = useUser();
+  const ctx = api.useContext();
+
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
 
   const { data: chatList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
+
+  if (user && user.user && chatList) {
+    const chatIds = chatList.map((chatListItem) => chatListItem.chatId);
+    const chatIdsString = chatIds.toString();
+
+    supabase
+      .channel(`${user.user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "ChatMessage",
+          filter: `chatId=in.(${chatIdsString})`,
+        },
+        (_payload) => {
+          void ctx.chat.getChatList.invalidate();
+        }
+      )
+      .subscribe();
+  }
 
   const { data: chatId, refetch: searchUserQuery } =
     api.chat.openOrCreateChat.useQuery(
@@ -346,25 +358,14 @@ const ChatList = (props: ChatListProps) => {
     props.setShowChatListMobile();
   };
 
-  if (chatIdListLoading)
+  if (chatIdListLoading || !chatList)
     return (
       <div
         className={`no-scrollbar ${
           props.showChatListMobile ? "flex" : "hidden md:flex"
         } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
       >
-        <Loading />
-      </div>
-    );
-
-  if (!chatList)
-    return (
-      <div
-        className={`no-scrollbar ${
-          props.showChatListMobile ? "flex" : "hidden md:flex"
-        } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
-      >
-        Error
+        {chatList ? <Loading /> : `Error`}
       </div>
     );
 
@@ -505,23 +506,15 @@ interface ProfilePictureOrDefaultProps {
 const ProfilePictureOrDefault = (props: ProfilePictureOrDefaultProps) => {
   return (
     <>
-      {props.profileImageUrl ? (
-        <Image
-          src={props.profileImageUrl}
-          alt="Profile picture"
-          width={props.width}
-          height={props.height}
-          className="rounded-full"
-        ></Image>
-      ) : (
-        <Image
-          src={defaultProfilePicture}
-          alt="Profile picture"
-          width={props.width}
-          height={props.height}
-          className="rounded-full"
-        ></Image>
-      )}
+      <Image
+        src={
+          props.profileImageUrl ? props.profileImageUrl : defaultProfilePicture
+        }
+        alt="Profile picture"
+        width={props.width}
+        height={props.height}
+        className="rounded-full"
+      ></Image>
     </>
   );
 };

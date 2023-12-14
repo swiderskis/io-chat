@@ -117,18 +117,6 @@ export const chatRouter = createTRPCRouter({
     return chatDetails;
   }),
 
-  getLastMessage: privateProcedure
-    .input(z.object({ chatId: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const lastMessage = await ctx.prisma.chatMessage.findFirst({
-        where: { chatId: input.chatId },
-        select: { message: true, userId: true, sentAt: true },
-        orderBy: { id: "desc" },
-      });
-
-      return lastMessage;
-    }),
-
   openOrCreateChat: privateProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ ctx, input }) => {
