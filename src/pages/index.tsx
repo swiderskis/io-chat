@@ -92,16 +92,16 @@ const ChatWindow = (props: ChatWindowProps) => {
   const user = useUser();
   const ctx = api.useContext();
 
-  const activeChatId = useRef<number>();
+  const subscribedChatId = useRef<number>();
 
   const { data: messages, isLoading: messagesLoading } =
     api.chat.getMessages.useQuery({
       chatId: props.chatId,
     });
 
-  if (!activeChatId.current || activeChatId.current != props.chatId) {
-    if (activeChatId.current) {
-      void supabase.channel(`${activeChatId.current}`).unsubscribe();
+  if (!subscribedChatId.current || subscribedChatId.current != props.chatId) {
+    if (subscribedChatId.current) {
+      void supabase.channel(`${subscribedChatId.current}`).unsubscribe();
     }
 
     supabase
@@ -120,7 +120,7 @@ const ChatWindow = (props: ChatWindowProps) => {
       )
       .subscribe();
 
-    activeChatId.current = props.chatId;
+    subscribedChatId.current = props.chatId;
   }
 
   if (messagesLoading || !user.user || !messages)
@@ -169,19 +169,15 @@ const ChatHeader = (props: ChatHeaderProps) => {
 
   return (
     <div className="flex h-16 w-full flex-row bg-zinc-900 p-2">
-      {chatDetails ? (
-        <ProfilePictureOrDefault
-          width={44}
-          height={44}
-          profileImageUrl={
-            chatDetailsLoading || !chatDetails || chatDetails.length > 1
-              ? undefined
-              : chatDetails[0]?.userDetails?.profileImageUrl
-          }
-        />
-      ) : (
-        <ProfilePictureOrDefault width={44} height={44} />
-      )}
+      <ProfilePictureOrDefault
+        width={44}
+        height={44}
+        profileImageUrl={
+          chatDetailsLoading || !chatDetails || chatDetails.length > 1
+            ? undefined
+            : chatDetails[0]?.userDetails?.profileImageUrl
+        }
+      />
       <div className="-mt-[2px] flex items-center px-3 pb-1 text-2xl">
         {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
           <span>User</span>
@@ -313,14 +309,12 @@ const ChatList = (props: ChatListProps) => {
   const [usernameSearch, setUsernameSearch] = useState("");
   const [showUsernameSearch, setShowUsernameSearch] = useState(false);
 
-  const activeUserId = useRef<string>();
+  const subbedToChatListUpdates = useRef(false);
 
   const { data: chatList, isLoading: chatIdListLoading } =
     api.chat.getChatList.useQuery();
 
-  if (user && user.user && chatList && !activeUserId.current) {
-    activeUserId.current = user.user.id;
-
+  if (user && user.user && chatList && !subbedToChatListUpdates.current) {
     const chatIds = chatList.map((chatListItem) => chatListItem.chatId);
     const chatIdsString = chatIds.toString();
 
@@ -339,6 +333,8 @@ const ChatList = (props: ChatListProps) => {
         }
       )
       .subscribe();
+
+    subbedToChatListUpdates.current = true;
   }
 
   const { data: chatId, refetch: searchUserQuery } =
@@ -372,16 +368,17 @@ const ChatList = (props: ChatListProps) => {
     props.setShowChatListMobile();
   };
 
-  if (chatIdListLoading || !chatList)
+  if (chatIdListLoading || !chatList) {
     return (
       <div
         className={`no-scrollbar ${
           props.showChatListMobile ? "flex" : "hidden md:flex"
         } h-full w-screen flex-col overflow-y-auto bg-zinc-800 py-1 md:w-96`}
       >
-        {chatList ? `Error` : <Loading />}
+        {typeof chatList === undefined ? `Error` : <Loading />}
       </div>
     );
+  }
 
   return (
     <nav
@@ -467,19 +464,15 @@ const ChatListItem = (props: ChatListItemProps) => {
           props.setShowChatListMobile();
         }}
       >
-        {chatDetails ? (
-          <ProfilePictureOrDefault
-            width={44}
-            height={44}
-            profileImageUrl={
-              chatDetailsLoading || !chatDetails || chatDetails.length > 1
-                ? undefined
-                : chatDetails[0]?.userDetails?.profileImageUrl
-            }
-          />
-        ) : (
-          <ProfilePictureOrDefault width={44} height={44} />
-        )}
+        <ProfilePictureOrDefault
+          width={44}
+          height={44}
+          profileImageUrl={
+            chatDetailsLoading || !chatDetails || chatDetails.length > 1
+              ? undefined
+              : chatDetails[0]?.userDetails?.profileImageUrl
+          }
+        />
         <div className="-mt-[2px] flex flex-col truncate px-3">
           {chatDetailsLoading || !chatDetails || chatDetails.length > 1 ? (
             <span>User</span>
@@ -514,7 +507,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 interface ProfilePictureOrDefaultProps {
   width: number;
   height: number;
-  profileImageUrl?: string | undefined;
+  profileImageUrl: string | undefined;
 }
 
 const ProfilePictureOrDefault = (props: ProfilePictureOrDefaultProps) => {
